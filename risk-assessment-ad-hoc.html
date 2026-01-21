@@ -717,6 +717,7 @@ const db = getFirestore(app);
       try{
         const data = await callAnalyzeRisk(riskText);
         const text = extractTextFromGeminiResponse(data);
+        console.log("📦 Gemini RAW response text:", text);
         const parsed = parseRiskAnalysis(text);
        // ===== 교육 키워드 & 현장소장 지시사항도 같이 채움 =====
 if (parsed && parsed.sol) {
