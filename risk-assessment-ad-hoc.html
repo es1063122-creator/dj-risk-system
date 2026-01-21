@@ -465,9 +465,8 @@
     /***********************
      * 1) Firebase init (당신이 준 설정 그대로)
      ***********************/
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-analytics.js";
-   import {
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
+import {
   getFirestore,
   collection,
   addDoc,
@@ -481,20 +480,19 @@
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
 
+const firebaseConfig = {
+  apiKey: "AIzaSyDO0z7h5WVsyHob7PAJLzOBFi8wCifAsdY",
+  authDomain: "dongjin-risk-system.firebaseapp.com",
+  projectId: "dongjin-risk-system",
+  storageBucket: "dongjin-risk-system.firebasestorage.app",
+  messagingSenderId: "419989869270",
+  appId: "1:419989869270:web:b1d2dae3d82a7110732f77",
+  measurementId: "G-WP7514NHWL"
+};
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyDO0z7h5WVsyHob7PAJLzOBFi8wCifAsdY",
-      authDomain: "dongjin-risk-system.firebaseapp.com",
-      projectId: "dongjin-risk-system",
-      storageBucket: "dongjin-risk-system.firebasestorage.app",
-      messagingSenderId: "419989869270",
-      appId: "1:419989869270:web:b1d2dae3d82a7110732f77",
-      measurementId: "G-WP7514NHWL"
-    };
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-    const app = initializeApp(firebaseConfig);
-    try { getAnalytics(app); } catch(e) {}
-    const db = getFirestore(app);
 
     /***********************
      * 2) Cloud Functions URL (여기만 본인 것으로 수정)
