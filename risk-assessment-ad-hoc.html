@@ -322,7 +322,7 @@
       <div class="actions">
         <button class="btn" id="addRowBtn">+ 행 추가</button>
         <button class="btn danger" id="removeCheckedBtn">선택 삭제</button>
-        <button class="btn" id="genBossBtn">현장소장 지시사항 AI 생성</button>
+        <button class="btn" id="genBossBtn">지시사항/교육내용생성</button>
         <button class="btn primary" id="pdfBtn">PDF 저장(최적화)</button>
         <button class="btn primary" id="saveBtn">저장</button>
       </div>
@@ -499,8 +499,8 @@ const db = getFirestore(app);
      *  - analyzeRisk: 위험요인 1건 분석
      *  - summary: 교육키워드 + 현장소장 지시사항 생성
      ***********************/
-    const CLOUD_FUNCTION_ANALYZE_URL = "https://us-central1-dongjin-risk-system.cloudfunctions.net/analyzeRisk";
-    const CLOUD_FUNCTION_SUMMARY_URL = "https://us-central1-dongjin-risk-system.cloudfunctions.net/generateSummary"; // 없으면 나중에 Functions 추가
+    const CLOUD_FUNCTION_ANALYZE_URL =
+  "https://analyzerisk-liyfexuqgq-uc.a.run.app";
 
     /***********************
      * 3) DOM helpers
@@ -718,6 +718,41 @@ const db = getFirestore(app);
         const data = await callAnalyzeRisk(riskText);
         const text = extractTextFromGeminiResponse(data);
         const parsed = parseRiskAnalysis(text);
+       // ===== 교육 키워드 & 현장소장 지시사항도 같이 채움 =====
+if (parsed && parsed.sol) {
+  // 모든 행의 개선대책을 모아 소장지시사항 자동 갱신
+  const allSolutions = [...tbody.querySelectorAll(".solution")]
+    .map(el => el.value)
+    .filter(v => v && v !== "분석 중...")
+    .join("\n");
+
+  if (allSolutions) {
+    const data = await callAnalyzeRisk(riskText);
+
+// 위험성평가
+damageEl.value = data.damageType || "";
+probEl.value   = data.probability || "";
+sevEl.value    = data.severity || "";
+solEl.value    = (data.countermeasures || []).join("\n");
+
+// 등급
+const { score, cls } = riskLevel(probEl.value, sevEl.value);
+gradeEl.textContent = score;
+gradeEl.classList.remove("riskHi","riskMd","riskLo");
+if (cls) gradeEl.classList.add(cls);
+
+// ✅ 교육 키워드
+$("edu1").value = data.educationKeywords?.[0] || "";
+$("edu2").value = data.educationKeywords?.[1] || "";
+$("edu3").value = data.educationKeywords?.[2] || "";
+
+// ✅ 현장소장 지시사항
+$("bossInstr").value =
+  (data.siteManagerInstructions || []).join("\n");
+
+  }
+}
+
 
         if(!parsed){
           damageEl.value = "분석 실패";
@@ -751,58 +786,14 @@ const db = getFirestore(app);
      *  - 표에 위험요인/개선대책이 있어야 의미있음
      *  - Functions generateSummary 를 구현해두면 100% 동일하게 동작
      ***********************/
-    async function callSummary(risks, solutions){
-      const res = await fetch(CLOUD_FUNCTION_SUMMARY_URL, {
-        method:"POST",
-        headers:{ "Content-Type":"application/json" },
-        body: JSON.stringify({ risks, solutions })
-      });
-      if(!res.ok){
-        const t = await res.text();
-        throw new Error(`지시사항 생성 오류: ${res.status} ${t.slice(0,200)}`);
-      }
-      return await res.json();
-    }
+$("genBossBtn").addEventListener("click", ()=>{
+  alert(
+    "현장소장 지시사항 및 교육 키워드는\n" +
+    "위험요인 입력 시 자동 생성됩니다.\n\n" +
+    "필요 시 직접 수정하세요."
+  );
+});
 
-    $("genBossBtn").addEventListener("click", async ()=>{
-      // collect risks & solutions
-      const rows = [...tbody.querySelectorAll("tr")];
-      let risks = "";
-      let sols = "";
-      rows.forEach(tr=>{
-        const r = (tr.querySelector(".riskText").value || "").trim();
-        const s = (tr.querySelector(".solution").value || "").trim();
-        if(r && r !== "분석 중..."){
-          risks += `- ${r}\n`;
-          if(s && s !== "분석 중...") sols += `${s}\n`;
-        }
-      });
-
-      if(!risks.trim()){
-        alert("위험요인이 입력되지 않았습니다.");
-        return;
-      }
-
-      showOverlay("AI 생성 중", "위험요인/개선대책을 종합해서 교육키워드 및 현장소장 지시사항을 생성합니다.");
-
-      try{
-        const data = await callSummary(risks, sols);
-        const text = extractTextFromGeminiResponse(data);
-        const parsed = parseSummary(text);
-        if(!parsed){
-          $("bossInstr").value = text ? text : "파싱 실패";
-        }else{
-          $("edu1").value = parsed.edu1 || "";
-          $("edu2").value = parsed.edu2 || "";
-          $("edu3").value = parsed.edu3 || "";
-          $("bossInstr").value = parsed.boss || "";
-        }
-      }catch(err){
-        alert(String(err.message || err));
-      }finally{
-        hideOverlay();
-      }
-    });
 let savedDocId = null; // 🔑 저장된 문서 ID 보관용
 
 async function saveRiskEvaluation(){
