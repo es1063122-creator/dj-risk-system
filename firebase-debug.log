@@ -1,0 +1,60 @@
+[debug] [2026-01-21T04:29:26.894Z] ----------------------------------------------------------------------
+[debug] [2026-01-21T04:29:26.896Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\dj\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js init hosting
+[debug] [2026-01-21T04:29:26.896Z] CLI Version:   14.26.0
+[debug] [2026-01-21T04:29:26.897Z] Platform:      win32
+[debug] [2026-01-21T04:29:26.897Z] Node Version:  v24.11.1
+[debug] [2026-01-21T04:29:26.897Z] Time:          Wed Jan 21 2026 13:29:26 GMT+0900 (대한민국 표준시)
+[debug] [2026-01-21T04:29:26.897Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-01-21T04:29:26.898Z] >>> [apiv2][query] GET https://firebase-public.firebaseio.com/cli.json [none]
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  C:\Users\dj\Desktop\앱개발\위험성평가
+
+[debug] [2026-01-21T04:29:27.373Z] <<< [apiv2][status] GET https://firebase-public.firebaseio.com/cli.json 200
+[debug] [2026-01-21T04:29:27.374Z] <<< [apiv2][body] GET https://firebase-public.firebaseio.com/cli.json {"cloudBuildErrorAfter":1594252800000,"cloudBuildWarnAfter":1590019200000,"defaultNode10After":1594252800000,"minVersion":"3.0.5","node8DeploysDisabledAfter":1613390400000,"node8RuntimeDisabledAfter":1615809600000,"node8WarnAfter":1600128000000}
+[info] 
+=== Project Setup
+[info] 
+[info] First, let's associate this project directory with a Firebase project.
+[info] You can create multiple project aliases by running firebase use --add, 
+[info] 
+[debug] [2026-01-21T04:29:42.103Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-01-21T04:29:42.103Z] > authorizing via signed-in user (es1063122@gmail.com)
+[debug] [2026-01-21T04:29:42.104Z] Checked if tokens are valid: false, expires at: 1768348929391
+[debug] [2026-01-21T04:29:42.104Z] Checked if tokens are valid: false, expires at: 1768348929391
+[debug] [2026-01-21T04:29:42.104Z] > refreshing access token with scopes: []
+[debug] [2026-01-21T04:29:42.105Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2026-01-21T04:29:42.105Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-01-21T04:29:42.356Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2026-01-21T04:29:42.356Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-01-21T04:29:42.364Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects pageSize=100
+[debug] [2026-01-21T04:29:43.013Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects 200
+[debug] [2026-01-21T04:29:43.013Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects [omitted]
+[info] 
+=== Hosting Setup
+[debug] [2026-01-21T04:29:50.610Z] Checked if tokens are valid: true, expires at: 1768973381356
+[debug] [2026-01-21T04:29:50.610Z] Checked if tokens are valid: true, expires at: 1768973381356
+[debug] [2026-01-21T04:29:50.610Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/dongjin-risk-system [none]
+[debug] [2026-01-21T04:29:51.024Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/dongjin-risk-system 200
+[debug] [2026-01-21T04:29:51.024Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/dongjin-risk-system {"projectId":"dongjin-risk-system","projectNumber":"419989869270","displayName":"dongjin-risk-system","name":"projects/dongjin-risk-system","resources":{"hostingSite":"dongjin-risk-system"},"state":"ACTIVE","etag":"1_5a38166e-1c9b-4ef7-9f69-ee947601ccf4"}
+[info] 
+[info] Your public directory is the folder (relative to your project directory) that
+[info] will contain Hosting assets to be uploaded with firebase deploy. If you
+[info] have a build process for your assets, use your build's output directory.
+[info] 
+[info] 
+[info] i  Didn't detect a .git folder. Assuming C:\Users\dj\Desktop\앱개발\위험성평가 is the project root. 
+[info] i  Authorizing with GitHub to upload your service account to a GitHub repository's secrets store. 
+[info] 
+[info] Visit this URL on this device to log in:
+[info] https://github.com/login/oauth/authorize?client_id=89cf50f02ac6aaed3484&state=521566519&redirect_uri=http%3A%2F%2Flocalhost%3A9005&scope=read%3Auser%20repo%20public_repo
+[info] 
+[info] Waiting for authentication...

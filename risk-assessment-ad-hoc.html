@@ -1,0 +1,1065 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>수시 위험성평가서 | 동진토건(주)</title>
+
+  <!-- Pretendard -->
+  <link rel="stylesheet" as="style" crossorigin
+        href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+
+  <!-- html2pdf (한글 깨짐 방지: html 렌더링 그대로 PDF) -->
+  <script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>
+
+  <style>
+    :root{
+      --dj:#004080;
+      --dj2:#007bff;
+      --bg:#f5f7ff;
+      --card:#fff;
+      --text:#0b1b3b;
+      --muted:#6b7a99;
+      --line:rgba(0,64,128,.14);
+      --shadow:0 12px 34px rgba(0,64,128,.12);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Pretendard,system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans KR",sans-serif;
+      background: radial-gradient(1200px 500px at 20% 0%, rgba(0,123,255,.18), transparent 55%),
+                  radial-gradient(1200px 500px at 80% 0%, rgba(0,64,128,.18), transparent 55%),
+                  var(--bg);
+      color:var(--text);
+    }
+    .wrap{max-width:none;          /* 제한 해제 */
+  width:100%;
+  margin:22px auto;
+  padding:0 16px 40px;     /* 내부 여백은 유지 */
+}
+    .topbar{
+      display:flex;gap:12px;align-items:center;justify-content:space-between;
+      margin-bottom:14px;
+    }
+    .brand{
+      display:flex;align-items:center;gap:12px;
+    }
+    .logo{
+      width:42px;height:42px;border-radius:14px;
+      background: linear-gradient(135deg,var(--dj),var(--dj2));
+      box-shadow: 0 10px 22px rgba(0,64,128,.22);
+    }
+    .titlebox h1{font-size:20px;margin:0 0 2px}
+    .titlebox .sub{font-size:12px;color:var(--muted)}
+    .actions{display:flex;gap:8px;flex-wrap:wrap}
+    .btn{
+      border:1px solid var(--line);
+      background:#fff;
+      color:var(--text);
+      border-radius:12px;
+      padding:10px 12px;
+      font-weight:700;
+      cursor:pointer;
+      box-shadow: 0 8px 16px rgba(0,64,128,.06);
+      display:inline-flex;gap:8px;align-items:center;
+    }
+    .btn.primary{
+      background: linear-gradient(135deg,var(--dj),var(--dj2));
+      color:#fff;border-color:transparent;
+    }
+    .btn.danger{background:#fff1f1;border-color:rgba(220,38,38,.2);color:#b91c1c}
+    .btn:active{transform:translateY(1px)}
+    .grid{
+      display:grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap:14px;
+    }
+    @media (max-width:980px){
+      .grid{grid-template-columns:1fr}
+      .actions{justify-content:flex-start}
+    }
+    .card{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding:16px;
+    }
+    .card h2{
+      font-size:15px;margin:0 0 12px;
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+    }
+    .badge{
+      font-size:11px;
+      color:#fff;
+      padding:6px 10px;
+      border-radius:999px;
+      background: linear-gradient(135deg,rgba(0,64,128,.9),rgba(0,123,255,.9));
+    }
+    .row{
+      display:grid;
+      grid-template-columns: 140px 1fr 140px 1fr;
+      gap:10px 12px;
+      align-items:center;
+      margin-bottom:10px;
+    }
+/* 기본 정보 상단 전용 (회차 ↓ / 작성자 ↑) */
+.row-basic{
+  grid-template-columns:
+    1.4fr   /* 문서 제목 */
+    0.6fr   /* 회차 (좁게) */
+    1fr     /* 현장명 */
+    1.8fr;  /* 작성자 (넓게) */
+}
+
+    @media (max-width:700px){
+      .row{grid-template-columns: 1fr}
+    }
+    label{
+      font-size:12px;
+      color:var(--muted);
+      font-weight:800;
+    }
+    input, select, textarea{
+      width:100%;
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:10px 12px;
+      outline:none;
+      font-size:14px;
+      background:#fff;
+    }
+    textarea{min-height:88px;resize:vertical}
+    .hint{
+      font-size:12px;color:var(--muted);margin-top:6px;line-height:1.4
+    }
+
+    /* table */
+    .table-wrap{
+      overflow:auto;
+      border:1px solid var(--line);
+      border-radius:14px;
+    }
+    table{
+      width:100%;
+      border-collapse:separate;
+      border-spacing:0;
+      min-width:1180px;
+      background:#fff;
+    }
+    thead th{
+      position:sticky; top:0;
+      background: linear-gradient(180deg, rgba(0,64,128,.08), rgba(0,64,128,.03));
+      font-size:12px;
+      padding:10px 8px;
+      border-bottom:1px solid var(--line);
+      text-align:center;
+      white-space:nowrap;
+    }
+    tbody td{
+      border-bottom:1px solid rgba(0,64,128,.10);
+      padding:8px;
+      vertical-align:top;
+      background:#fff;
+    }
+    tbody tr:hover td{background:rgba(0,123,255,.035)}
+    .cell-input{
+      font-size:13px;
+      border-radius:10px;
+      padding:9px 10px;
+    }
+    .mini{
+      width:72px;
+      text-align:center;
+    }
+    .muted{
+      color:var(--muted);
+      font-size:12px;
+      font-weight:700;
+    }
+    .pill{
+      display:inline-flex;align-items:center;justify-content:center;
+      border:1px solid var(--line);
+      border-radius:999px;
+      padding:6px 10px;
+      font-weight:900;
+      font-size:12px;
+      min-width:58px;
+      background:#fff;
+    }
+    .pill.riskHi{background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.22);color:#b91c1c}
+    .pill.riskMd{background:rgba(245,158,11,.10);border-color:rgba(245,158,11,.22);color:#92400e}
+    .pill.riskLo{background:rgba(16,185,129,.10);border-color:rgba(16,185,129,.22);color:#065f46}
+
+    .tbl-actions{
+      display:flex;gap:8px;flex-wrap:wrap;
+      margin:10px 0 0;
+    }
+    .rightNote{
+      font-size:12px;color:var(--muted);
+    }
+
+    /* loading overlay */
+    .overlay{
+      position:fixed;inset:0;
+      background:rgba(5,15,35,.45);
+      display:none;
+      align-items:center;justify-content:center;
+      z-index:9999;
+      padding:18px;
+    }
+    .overlay.show{display:flex}
+    .overlay .box{
+      width:min(520px,100%);
+      background:#fff;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.3);
+      box-shadow:0 22px 60px rgba(0,0,0,.25);
+      padding:18px;
+    }
+    .overlay .box h3{margin:0 0 8px;font-size:15px}
+    .overlay .box p{margin:0;color:var(--muted);font-size:13px;line-height:1.5}
+    .bar{
+      height:10px;border-radius:999px;background:rgba(0,64,128,.08);
+      overflow:hidden;margin-top:12px;
+    }
+    .bar > i{
+      display:block;height:100%;
+      width:40%;
+      background:linear-gradient(90deg,var(--dj),var(--dj2));
+      border-radius:999px;
+      animation: move 1.2s infinite ease-in-out;
+    }
+    @keyframes move{
+      0%{transform:translateX(-40%)}
+      100%{transform:translateX(220%)}
+    }
+
+    /* PDF area (hidden) */
+    #pdfArea{
+      position:absolute;
+      left:-99999px; top:0;
+      width:210mm; /* A4 width */
+      padding:10mm;
+      background:#fff;
+      color:#111;
+    }
+    #pdfArea .pdf-head{
+      display:flex;justify-content:space-between;align-items:flex-end;gap:10px;
+      border-bottom:2px solid #0b1b3b;
+      padding-bottom:6px;margin-bottom:10px;
+    }
+    #pdfArea .pdf-head .h1{
+      font-size:18px;font-weight:900;letter-spacing:-.2px;
+    }
+    #pdfArea .pdf-head .meta{
+      font-size:11px;color:#333;text-align:right;line-height:1.4;
+    }
+    #pdfArea .pdf-box{
+      border:1px solid #999;border-radius:10px;padding:8px;margin:8px 0;
+    }
+    #pdfArea .pdf-grid{
+      display:grid;
+      grid-template-columns: 70px 1fr 70px 1fr;
+      gap:6px 10px;
+      font-size:11px;
+    }
+    #pdfArea .pdf-grid .k{font-weight:800;color:#333}
+    #pdfArea .pdf-grid .v{color:#111}
+    #pdfArea .pdf-section-title{
+      font-size:12px;font-weight:900;margin:10px 0 6px;
+    }
+    #pdfArea table{
+      min-width:0 !important;
+      width:100%;
+      border-collapse:collapse;
+      font-size:10px;
+    }
+    #pdfArea th,#pdfArea td{
+      border:1px solid #777;
+      padding:5px 6px;
+      vertical-align:top;
+    }
+    #pdfArea th{
+      background:#f2f4f8;
+      text-align:center;
+      font-weight:900;
+    }
+    #pdfArea .small{
+      font-size:10px; line-height:1.35;
+      white-space:pre-wrap;
+      word-break:break-word;
+    }
+    #pdfArea .sig{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:8px;
+      margin-top:10px;
+      font-size:11px;
+    }
+    #pdfArea .sig .box{
+      border:1px solid #777;border-radius:10px;padding:8px;min-height:44px;
+    }
+    #pdfArea .footer{
+      margin-top:10px;
+      font-size:10px;color:#333;
+      display:flex;justify-content:space-between;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo"></div>
+        <div class="titlebox">
+          <h1>수시 위험성평가서 (회차별)</h1>
+          <div class="sub">동진토건(주) · 내부용 · AI 자동분석 + PDF 최적화(세로 A4 고정)</div>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn" id="addRowBtn">+ 행 추가</button>
+        <button class="btn danger" id="removeCheckedBtn">선택 삭제</button>
+        <button class="btn" id="genBossBtn">현장소장 지시사항 AI 생성</button>
+        <button class="btn primary" id="pdfBtn">PDF 저장(최적화)</button>
+        <button class="btn primary" id="saveBtn">저장</button>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <h2>기본 정보 <span class="badge">STEP 1</span></h2>
+
+        <div class="row row-basic">
+          <div>
+            <label>문서 제목</label>
+            <input id="docTitle" value="수시 위험성평가서" />
+          </div>
+          <div>
+            <label>회차</label>
+            <input id="round" placeholder="예: 제 1 회" value="제 1 회" />
+          </div>
+          <div>
+            <label>현장명</label>
+            <select id="site">
+              <option value="">선택</option>
+              <option>파주pmc</option>
+              <option>울산태화강</option>
+              <option>울산우정동</option>
+              <option>강변아이파크</option>
+              <option>마포로3-1</option>
+              <option>김해사이언스</option>
+            </select>
+          </div>
+          <div>
+            <label>작성자</label>
+            <input id="writer" placeholder="작성자명" />
+          </div>
+          <div>
+            <label>회의일자</label>
+            <input id="meetingDate" type="date" />
+          </div>
+          <div>
+            <label>평가기간</label>
+            <div style="display:flex;gap:8px;align-items:center">
+              <input id="periodFrom" type="date" />
+              <span class="muted">~</span>
+              <input id="periodTo" type="date" />
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label>공종 대분류</label>
+            <input id="majorWork" placeholder="예: 토공, 철근콘크리트, 마감 등" />
+          </div>
+          <div>
+            <label>공종 소분류</label>
+            <input id="minorWork" placeholder="예: 굴착, 거푸집, 타설 등" />
+          </div>
+          <div>
+            <label>작업일수</label>
+            <input id="workDays" type="number" min="0" placeholder="예: 5" />
+          </div>
+          <div>
+            <label>직종별 인원</label>
+            <input id="workersByJob" placeholder="예: 형틀 5, 철근 3, 신호수 1" />
+          </div>
+          <div style="grid-column:1/-1">
+            <label>투입 장비</label>
+            <input id="equipments" placeholder="예: 굴착기 1, 덤프 2, 크레인 1" />
+            <div class="hint">※ 위험요인 입력 시 AI가 <b>피해형태/가능성/중대성/개선대책</b>을 자동 작성합니다.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>현장소장 지시사항 <span class="badge">STEP 3</span></h2>
+        <textarea id="bossInstr" placeholder="(AI 생성 또는 수기 입력)"></textarea>
+        <div class="hint">※ “현장소장 지시사항 AI 생성” 버튼을 누르면, 표의 위험요인/개선대책을 종합해 자동 작성합니다.</div>
+
+        <div style="margin-top:10px">
+          <div class="muted">교육 키워드(선택)</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:6px">
+            <input id="edu1" placeholder="교육내용1" />
+            <input id="edu2" placeholder="교육내용2" />
+            <input id="edu3" placeholder="교육내용3" />
+          </div>
+        </div>
+
+        <div style="margin-top:12px" class="rightNote">
+          PDF는 <b>세로 A4</b>로 고정되며, 표가 길면 자동으로 페이지가 나뉩니다.
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:14px">
+      <h2>위험성평가 상세 <span class="badge">STEP 2</span></h2>
+
+      <div class="table-wrap">
+        <table id="riskTable">
+          <thead>
+            <tr>
+              <th style="min-width:44px"><input type="checkbox" id="checkAll" /></th>
+              <th style="min-width:56px">No</th>
+              <th style="min-width:150px">작업명</th>
+              <th style="min-width:140px">작업위치</th>
+              <th style="min-width:210px">위험요인 (입력)</th>
+              <th style="min-width:90px">피해형태</th>
+              <th style="min-width:74px">가능성</th>
+              <th style="min-width:74px">중대성</th>
+              <th style="min-width:86px">등급</th>
+              <th style="min-width:260px">개선대책 (AI)</th>
+              <th style="min-width:120px">조치자</th>
+              <th style="min-width:120px">점검자</th>
+            </tr>
+          </thead>
+          <tbody id="riskTbody"></tbody>
+        </table>
+      </div>
+
+      <div class="tbl-actions">
+        <button class="btn" id="addRowBtn2">+ 행 추가</button>
+        <button class="btn danger" id="removeCheckedBtn2">선택 삭제</button>
+        <div class="rightNote">Tip) 위험요인 입력 후 포커스를 빼면(탭/클릭) AI가 자동 분석합니다.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading overlay -->
+  <div class="overlay" id="overlay">
+    <div class="box">
+      <h3 id="overlayTitle">처리 중...</h3>
+      <p id="overlayMsg">잠시만 기다려 주세요.</p>
+      <div class="bar"><i></i></div>
+    </div>
+  </div>
+
+  <!-- PDF Area (hidden, print-friendly) -->
+  <div id="pdfArea" aria-hidden="true"></div>
+
+  <script type="module">
+    /***********************
+     * 1) Firebase init (당신이 준 설정 그대로)
+     ***********************/
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-analytics.js";
+   import {
+  getFirestore,
+  collection,
+  addDoc,
+  getDocs,
+  query,
+  orderBy,
+  where,
+  updateDoc,
+  doc,
+  arrayUnion,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
+
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDO0z7h5WVsyHob7PAJLzOBFi8wCifAsdY",
+      authDomain: "dongjin-risk-system.firebaseapp.com",
+      projectId: "dongjin-risk-system",
+      storageBucket: "dongjin-risk-system.firebasestorage.app",
+      messagingSenderId: "419989869270",
+      appId: "1:419989869270:web:b1d2dae3d82a7110732f77",
+      measurementId: "G-WP7514NHWL"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    try { getAnalytics(app); } catch(e) {}
+    const db = getFirestore(app);
+
+    /***********************
+     * 2) Cloud Functions URL (여기만 본인 것으로 수정)
+     *  - analyzeRisk: 위험요인 1건 분석
+     *  - summary: 교육키워드 + 현장소장 지시사항 생성
+     ***********************/
+    const CLOUD_FUNCTION_ANALYZE_URL = "https://us-central1-dongjin-risk-system.cloudfunctions.net/analyzeRisk";
+    const CLOUD_FUNCTION_SUMMARY_URL = "https://us-central1-dongjin-risk-system.cloudfunctions.net/generateSummary"; // 없으면 나중에 Functions 추가
+
+    /***********************
+     * 3) DOM helpers
+     ***********************/
+    const $ = (id) => document.getElementById(id);
+    const overlay = $("overlay");
+    function showOverlay(title, msg){
+      $("overlayTitle").textContent = title || "처리 중...";
+      $("overlayMsg").textContent = msg || "잠시만 기다려 주세요.";
+      overlay.classList.add("show");
+    }
+    function hideOverlay(){ overlay.classList.remove("show"); }
+
+    function todayISO(){
+      const d = new Date();
+      const mm = String(d.getMonth()+1).padStart(2,"0");
+      const dd = String(d.getDate()).padStart(2,"0");
+      return `${d.getFullYear()}-${mm}-${dd}`;
+    }
+
+    // default dates
+    $("meetingDate").value = todayISO();
+    $("periodFrom").value = todayISO();
+    $("periodTo").value = todayISO();
+
+    /***********************
+     * 4) Risk rows state
+     ***********************/
+    const tbody = $("riskTbody");
+
+    function riskLevel(p, s){
+      const pp = Number(p), ss = Number(s);
+      if(!pp || !ss) return {score:"-", cls:""};
+      const score = pp * ss;
+      if(score >= 6) return {score:String(score), cls:"riskHi"};   // 6~9
+      if(score >= 4) return {score:String(score), cls:"riskMd"};   // 4~5
+      return {score:String(score), cls:"riskLo"};                  // 1~3
+    }
+
+    function makeRow(no){
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td style="text-align:center"><input type="checkbox" class="chkRow"></td>
+        <td style="text-align:center"><span class="muted no">${no}</span></td>
+
+        <td><input class="cell-input workName" placeholder="작업명"></td>
+        <td><input class="cell-input workLoc" placeholder="작업위치"></td>
+
+        <td><textarea class="cell-input riskText" placeholder="위험요인 입력 (예: 개구부 주변 작업 중 추락 위험)"></textarea></td>
+
+        <td><input class="cell-input damage" placeholder="자동"></td>
+
+        <td style="text-align:center">
+          <input class="cell-input mini prob" placeholder="1~3" inputmode="numeric">
+        </td>
+        <td style="text-align:center">
+          <input class="cell-input mini sev" placeholder="1~3" inputmode="numeric">
+        </td>
+
+        <td style="text-align:center">
+          <span class="pill grade">-</span>
+        </td>
+
+        <td><textarea class="cell-input solution" placeholder="자동"></textarea></td>
+        <td><input class="cell-input actor" placeholder="조치자"></td>
+        <td><input class="cell-input inspector" placeholder="점검자"></td>
+      `;
+
+      // events
+      const riskEl = tr.querySelector(".riskText");
+      const probEl = tr.querySelector(".prob");
+      const sevEl  = tr.querySelector(".sev");
+      const gradeEl= tr.querySelector(".grade");
+
+      function refreshGrade(){
+        const {score, cls} = riskLevel(probEl.value, sevEl.value);
+        gradeEl.textContent = score;
+        gradeEl.classList.remove("riskHi","riskMd","riskLo");
+        if(cls) gradeEl.classList.add(cls);
+      }
+
+      probEl.addEventListener("input", refreshGrade);
+      sevEl.addEventListener("input", refreshGrade);
+
+      // AI analyze when leaving the risk text area
+      riskEl.addEventListener("blur", async ()=>{
+        const txt = (riskEl.value || "").trim();
+        if(!txt) return;
+
+        await analyzeAndFill(tr, txt);
+      });
+
+      return tr;
+    }
+
+    function renumber(){
+      [...tbody.querySelectorAll("tr")].forEach((tr, idx)=>{
+        tr.querySelector(".no").textContent = String(idx+1);
+      });
+    }
+
+    function addRow(n=1){
+      const start = tbody.querySelectorAll("tr").length;
+      for(let i=0;i<n;i++){
+        tbody.appendChild(makeRow(start+i+1));
+      }
+    }
+
+    function removeChecked(){
+      const rows = [...tbody.querySelectorAll("tr")];
+      rows.forEach(tr=>{
+        const chk = tr.querySelector(".chkRow");
+        if(chk && chk.checked) tr.remove();
+      });
+      renumber();
+      $("checkAll").checked = false;
+    }
+
+    // init with 5 rows
+    addRow(5);
+
+    $("addRowBtn").addEventListener("click", ()=>addRow(1));
+    $("addRowBtn2").addEventListener("click", ()=>addRow(1));
+    $("removeCheckedBtn").addEventListener("click", removeChecked);
+    $("removeCheckedBtn2").addEventListener("click", removeChecked);
+
+    $("checkAll").addEventListener("change", (e)=>{
+      const v = e.target.checked;
+      tbody.querySelectorAll(".chkRow").forEach(c=>c.checked=v);
+    });
+
+    /***********************
+     * 5) Gemini response parsing (VBA 로직 대응)
+     ***********************/
+    function extractTextFromGeminiResponse(data){
+      // 기대: data.candidates[0].content.parts[0].text
+      try{
+        const t = data?.candidates?.[0]?.content?.parts?.map(p=>p.text).join("\n");
+        return (t || "").trim();
+      }catch(e){
+        return "";
+      }
+    }
+
+    function extractSection(full, startMarker, endMarker){
+      const s = full.indexOf(startMarker);
+      if(s < 0) return "";
+      let start = s + startMarker.length;
+      let chunk = full.slice(start);
+      if(endMarker){
+        const e = chunk.indexOf(endMarker);
+        if(e >= 0) chunk = chunk.slice(0, e);
+      }
+      chunk = chunk.trim();
+
+      // 가능성/중대성은 숫자 하나만
+      if(startMarker === "[가능성]" || startMarker === "[중대성]"){
+        const m = chunk.match(/[1-3]/);
+        return m ? m[0] : "";
+      }
+      return chunk;
+    }
+
+    function parseRiskAnalysis(text){
+      // VBA 포맷 그대로 파싱
+      if(!text || text.indexOf("[피해형태]") < 0) return null;
+      const damage = extractSection(text, "[피해형태]", "[가능성]");
+      const prob   = extractSection(text, "[가능성]", "[중대성]");
+      const sev    = extractSection(text, "[중대성]", "[개선대책]");
+      const sol    = extractSection(text, "[개선대책]", "");
+      return {damage, prob, sev, sol};
+    }
+
+    function parseSummary(text){
+      if(!text || text.indexOf("[현장소장지시사항]") < 0) return null;
+      const edu1 = extractSection(text, "[교육내용1]", "[교육내용2]");
+      const edu2 = extractSection(text, "[교육내용2]", "[교육내용3]");
+      const edu3 = extractSection(text, "[교육내용3]", "[현장소장지시사항]");
+      const boss = extractSection(text, "[현장소장지시사항]", "");
+      return {edu1, edu2, edu3, boss};
+    }
+
+    /***********************
+     * 6) Call cloud function to analyze risk
+     ***********************/
+    async function callAnalyzeRisk(riskText){
+      const res = await fetch(CLOUD_FUNCTION_ANALYZE_URL, {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({ riskText })
+      });
+      if(!res.ok){
+        const t = await res.text();
+        throw new Error(`AI 분석 오류: ${res.status} ${t.slice(0,200)}`);
+      }
+      return await res.json();
+    }
+
+    async function analyzeAndFill(tr, riskText){
+      const damageEl = tr.querySelector(".damage");
+      const probEl   = tr.querySelector(".prob");
+      const sevEl    = tr.querySelector(".sev");
+      const solEl    = tr.querySelector(".solution");
+      const gradeEl  = tr.querySelector(".grade");
+
+      // show placeholders
+      damageEl.value = "분석 중...";
+      probEl.value   = "분석 중...";
+      sevEl.value    = "분석 중...";
+      solEl.value    = "분석 중...";
+      gradeEl.textContent = "-";
+      gradeEl.classList.remove("riskHi","riskMd","riskLo");
+
+      try{
+        const data = await callAnalyzeRisk(riskText);
+        const text = extractTextFromGeminiResponse(data);
+        const parsed = parseRiskAnalysis(text);
+
+        if(!parsed){
+          damageEl.value = "분석 실패";
+          probEl.value = "";
+          sevEl.value = "";
+          solEl.value = text ? text.slice(0,200) : "응답 파싱 실패";
+          return;
+        }
+
+        damageEl.value = parsed.damage || "";
+        probEl.value = parsed.prob || "";
+        sevEl.value = parsed.sev || "";
+        solEl.value = parsed.sol || "";
+
+        // grade
+        const {score, cls} = riskLevel(probEl.value, sevEl.value);
+        gradeEl.textContent = score;
+        gradeEl.classList.remove("riskHi","riskMd","riskLo");
+        if(cls) gradeEl.classList.add(cls);
+
+      }catch(err){
+        damageEl.value = "분석 실패";
+        probEl.value = "";
+        sevEl.value = "";
+        solEl.value = String(err.message || err);
+      }
+    }
+
+    /***********************
+     * 7) Generate boss instructions (summary) - optional
+     *  - 표에 위험요인/개선대책이 있어야 의미있음
+     *  - Functions generateSummary 를 구현해두면 100% 동일하게 동작
+     ***********************/
+    async function callSummary(risks, solutions){
+      const res = await fetch(CLOUD_FUNCTION_SUMMARY_URL, {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({ risks, solutions })
+      });
+      if(!res.ok){
+        const t = await res.text();
+        throw new Error(`지시사항 생성 오류: ${res.status} ${t.slice(0,200)}`);
+      }
+      return await res.json();
+    }
+
+    $("genBossBtn").addEventListener("click", async ()=>{
+      // collect risks & solutions
+      const rows = [...tbody.querySelectorAll("tr")];
+      let risks = "";
+      let sols = "";
+      rows.forEach(tr=>{
+        const r = (tr.querySelector(".riskText").value || "").trim();
+        const s = (tr.querySelector(".solution").value || "").trim();
+        if(r && r !== "분석 중..."){
+          risks += `- ${r}\n`;
+          if(s && s !== "분석 중...") sols += `${s}\n`;
+        }
+      });
+
+      if(!risks.trim()){
+        alert("위험요인이 입력되지 않았습니다.");
+        return;
+      }
+
+      showOverlay("AI 생성 중", "위험요인/개선대책을 종합해서 교육키워드 및 현장소장 지시사항을 생성합니다.");
+
+      try{
+        const data = await callSummary(risks, sols);
+        const text = extractTextFromGeminiResponse(data);
+        const parsed = parseSummary(text);
+        if(!parsed){
+          $("bossInstr").value = text ? text : "파싱 실패";
+        }else{
+          $("edu1").value = parsed.edu1 || "";
+          $("edu2").value = parsed.edu2 || "";
+          $("edu3").value = parsed.edu3 || "";
+          $("bossInstr").value = parsed.boss || "";
+        }
+      }catch(err){
+        alert(String(err.message || err));
+      }finally{
+        hideOverlay();
+      }
+    });
+let savedDocId = null; // 🔑 저장된 문서 ID 보관용
+
+async function saveRiskEvaluation(){
+  const rows = [...document.querySelectorAll("#riskTbody tr")];
+
+  const risks = rows.map((tr, idx)=>({
+    no: idx+1,
+    workName: tr.querySelector(".workName").value,
+    workLoc: tr.querySelector(".workLoc").value,
+    riskText: tr.querySelector(".riskText").value,
+    damage: tr.querySelector(".damage").value,
+    probability: tr.querySelector(".prob").value,
+    severity: tr.querySelector(".sev").value,
+    grade: tr.querySelector(".grade").textContent,
+    solution: tr.querySelector(".solution").value,
+    actor: tr.querySelector(".actor").value,
+    inspector: tr.querySelector(".inspector").value
+  })).filter(r => r.riskText);
+
+  if(!risks.length){
+    alert("저장할 위험요인이 없습니다.");
+    return;
+  }
+
+  const payload = {
+    title: docTitle.value,
+    round: round.value,
+    site: site.value,
+    writer: writer.value,
+    meetingDate: meetingDate.value,
+    periodFrom: periodFrom.value,
+    periodTo: periodTo.value,
+    majorWork: majorWork.value,
+    minorWork: minorWork.value,
+    workDays: workDays.value,
+    workersByJob: workersByJob.value,
+    equipments: equipments.value,
+    risks,
+    eduKeywords: {
+      edu1: edu1.value,
+      edu2: edu2.value,
+      edu3: edu3.value
+    },
+    bossInstruction: bossInstr.value,
+    createdAt: serverTimestamp(),
+    pdfLogs: []
+  };
+
+  showOverlay("저장 중", "위험성평가서를 저장하고 있습니다.");
+
+  try{
+    const ref = await addDoc(collection(db, "riskEvaluations"), payload);
+    savedDocId = ref.id; // ⭐ 여기 중요
+    alert("저장 완료");
+  }catch(e){
+    alert("저장 실패: " + e.message);
+  }finally{
+    hideOverlay();
+  }
+}
+
+   
+
+   /***********************
+     * 8) PDF Export (A4 세로 고정 + 표 최적화)
+     *  - 화면 테이블 그대로 넣지 않고, PDF 전용 레이아웃으로 재구성해서
+     *    "가로로 돌아가거나, 잘리는 문제"를 원천 해결
+     ***********************/
+    function fmtDate(iso){
+      if(!iso) return "";
+      const [y,m,d]=iso.split("-");
+      return `${y}.${m}.${d}`;
+    }
+
+    function buildPdfArea(){
+      const title = ($("docTitle").value || "수시 위험성평가서").trim();
+      const round = ($("round").value || "").trim();
+      const site  = ($("site").value || "").trim();
+      const writer= ($("writer").value || "").trim();
+      const meet  = fmtDate($("meetingDate").value);
+      const pFrom = fmtDate($("periodFrom").value);
+      const pTo   = fmtDate($("periodTo").value);
+      const major = ($("majorWork").value||"").trim();
+      const minor = ($("minorWork").value||"").trim();
+      const days  = ($("workDays").value||"").trim();
+      const jobs  = ($("workersByJob").value||"").trim();
+      const eqs   = ($("equipments").value||"").trim();
+
+      const boss  = ($("bossInstr").value||"").trim();
+      const edu1  = ($("edu1").value||"").trim();
+      const edu2  = ($("edu2").value||"").trim();
+      const edu3  = ($("edu3").value||"").trim();
+
+      const rows = [...tbody.querySelectorAll("tr")].map((tr, idx)=>{
+        const get = (sel)=> (tr.querySelector(sel)?.value || "").trim();
+        const grade = (tr.querySelector(".grade")?.textContent || "-").trim();
+        return {
+          no: idx+1,
+          workName: get(".workName"),
+          workLoc: get(".workLoc"),
+          riskText: get(".riskText"),
+          damage: get(".damage"),
+          prob: get(".prob"),
+          sev: get(".sev"),
+          grade,
+          solution: get(".solution"),
+          actor: get(".actor"),
+          inspector: get(".inspector"),
+        };
+      }).filter(r=> r.workName || r.workLoc || r.riskText || r.solution);
+
+      const pdf = $("pdfArea");
+      pdf.innerHTML = `
+        <div class="pdf-head">
+          <div>
+            <div class="h1">${escapeHtml(title)} ${escapeHtml(round ? `(${round})` : "")}</div>
+            <div style="font-size:11px;color:#333;margin-top:2px">동진토건(주) · 수시 위험성평가(회차별)</div>
+          </div>
+          <div class="meta">
+            <div><b>현장</b> : ${escapeHtml(site)}</div>
+            <div><b>작성자</b> : ${escapeHtml(writer)}</div>
+            <div><b>회의일자</b> : ${escapeHtml(meet)}</div>
+            <div><b>평가기간</b> : ${escapeHtml(pFrom)} ~ ${escapeHtml(pTo)}</div>
+          </div>
+        </div>
+
+        <div class="pdf-box">
+          <div class="pdf-grid">
+            <div class="k">공종(대)</div><div class="v">${escapeHtml(major)}</div>
+            <div class="k">공종(소)</div><div class="v">${escapeHtml(minor)}</div>
+
+            <div class="k">작업일수</div><div class="v">${escapeHtml(days)}</div>
+            <div class="k">직종별 인원</div><div class="v">${escapeHtml(jobs)}</div>
+
+            <div class="k">투입 장비</div><div class="v" style="grid-column:span 3">${escapeHtml(eqs)}</div>
+          </div>
+        </div>
+
+        <div class="pdf-section-title">위험성평가 상세</div>
+        <table>
+          <thead>
+            <tr>
+              <th style="width:26px">No</th>
+              <th style="width:66px">작업명</th>
+              <th style="width:60px">위치</th>
+              <th>위험요인</th>
+              <th style="width:46px">피해</th>
+              <th style="width:46px">가능</th>
+              <th style="width:46px">중대</th>
+              <th style="width:46px">등급</th>
+              <th>개선대책</th>
+              <th style="width:56px">조치</th>
+              <th style="width:56px">점검</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rows.length ? rows.map(r=>`
+              <tr>
+                <td style="text-align:center">${r.no}</td>
+                <td class="small">${escapeHtml(r.workName)}</td>
+                <td class="small">${escapeHtml(r.workLoc)}</td>
+                <td class="small">${escapeHtml(r.riskText)}</td>
+                <td style="text-align:center" class="small">${escapeHtml(r.damage)}</td>
+                <td style="text-align:center">${escapeHtml(r.prob)}</td>
+                <td style="text-align:center">${escapeHtml(r.sev)}</td>
+                <td style="text-align:center"><b>${escapeHtml(r.grade)}</b></td>
+                <td class="small">${escapeHtml(r.solution)}</td>
+                <td class="small">${escapeHtml(r.actor)}</td>
+                <td class="small">${escapeHtml(r.inspector)}</td>
+              </tr>
+            `).join("") : `
+              <tr><td colspan="11" style="text-align:center;color:#666;padding:10px">입력된 항목이 없습니다.</td></tr>
+            `}
+          </tbody>
+        </table>
+
+        <div class="pdf-section-title">교육 키워드</div>
+        <div class="pdf-box" style="font-size:11px">
+          ① ${escapeHtml(edu1)} &nbsp;&nbsp; ② ${escapeHtml(edu2)} &nbsp;&nbsp; ③ ${escapeHtml(edu3)}
+        </div>
+
+        <div class="pdf-section-title">현장소장 지시사항</div>
+        <div class="pdf-box small" style="min-height:70px">${escapeHtml(boss)}</div>
+
+        <div class="sig">
+          <div class="box"><b>작성자</b> : ${escapeHtml(writer)} (서명)</div>
+          <div class="box"><b>현장소장</b> : __________ (서명)</div>
+        </div>
+
+        <div class="footer">
+          <div>동진토건(주) · 위험성평가 관리</div>
+          <div>${new Date().toLocaleString("ko-KR")}</div>
+        </div>
+      `;
+    }
+
+    function escapeHtml(s){
+      return String(s ?? "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
+    async function exportPdf(){
+      buildPdfArea();
+
+      const el = $("pdfArea");
+      const title = ($("docTitle").value || "수시위험성평가서").trim();
+      const round = ($("round").value || "").trim();
+      const site  = ($("site").value || "").trim();
+      const date  = $("meetingDate").value || todayISO();
+
+      const filename = `${title}_${round || ""}_${site || "현장"}_${date}.pdf`
+        .replaceAll(" ","")
+        .replaceAll("__","_");
+
+      // 핵심: orientation 'portrait' 로 고정 (가로 방지)
+      const opt = {
+        margin:       [8, 8, 10, 8], // mm 비슷한 효과 (html2pdf 내부 단위)
+        filename,
+        image:        { type: 'jpeg', quality: 0.95 },
+        html2canvas:  {
+          scale: 2,                 // 선명도
+          useCORS: true,
+          letterRendering: true,
+          scrollY: 0
+        },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak:    { mode: ['css', 'legacy'] }
+      };
+
+      showOverlay("PDF 생성 중", "세로 A4로 최적화된 PDF를 생성합니다. (표가 길면 자동으로 페이지가 나뉩니다)");
+
+      try{
+        await html2pdf().set(opt).from(el).save();
+if(savedDocId){
+  await updateDoc(doc(db, "riskEvaluations", savedDocId), {
+    pdfLogs: arrayUnion({
+      printedAt: new Date().toISOString(),
+      printedBy: writer.value || "현장"
+    })
+  });
+}
+
+      }finally{
+        hideOverlay();
+      }
+    }
+    
+    saveBtn.addEventListener("click", saveRiskEvaluation);
+ 
+    $("pdfBtn").addEventListener("click", exportPdf);
+
+  </script>
+</body>
+</html>
