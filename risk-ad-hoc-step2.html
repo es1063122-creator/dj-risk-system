@@ -4,7 +4,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>동진토건 수시 위험성평가 v1.0SR FINAL</title>
-
+  <link rel="icon" type="image/x-icon"
+      href="https://raw.githubusercontent.com/es1063122-creator/dj-risk-system/main/djlogo.ico">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;800&display=swap" rel="stylesheet">
 
   <style>
@@ -308,6 +309,27 @@
       thead th{background:#f3f6ff}
       input, select, textarea{border:1px solid #bbb; box-shadow:none}
     }
+/* ===== v3.2 로고 표시 ===== */
+.mark.logo{
+  background:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.mark.logo img{
+  width:26px;
+  height:26px;
+  object-fit:contain;
+}
+
+  /* ===== v3.1 컬럼 비율 미세조정 (여기에 붙여!) ===== */
+  th:nth-child(6){ min-width:75px; }   /* 피해형태 */
+  th:nth-child(7){ min-width:45px; }   /* 가능성 */
+  th:nth-child(8){ min-width:45px; }   /* 중대성 */
+  th:nth-child(10){ min-width:420px; } /* 개선대책 */
+  th:nth-child(11){ min-width:75px; }  /* 조치자 */
+  th:nth-child(12){ min-width:75px; }  /* 점검자 */
   </style>
 </head>
 
@@ -318,7 +340,11 @@
   <div class="card">
     <div class="header">
       <div class="brand">
-        <div class="mark" aria-hidden="true"></div>
+        <div class="mark logo">
+  <img src="https://raw.githubusercontent.com/es1063122-creator/dj-risk-system/main/djlogo.ico"
+       alt="동진토건 로고">
+</div>
+
         <div class="titles">
           <p class="h1">위험성평가서 제 <span id="roundText">1</span>회차</p>
           <div class="sub">동진토건(주) · 수시 위험성평가 시스템 (단일 HTML + Gemini 자동분석 + 저장/전회차)</div>
@@ -435,13 +461,13 @@
             <th style="min-width:160px;">작업명</th>
             <th style="min-width:140px;">작업위치</th>
             <th style="min-width:260px;">위험요인 (AI 분석 트리거)</th>
-            <th style="min-width:110px;">피해형태</th>
-            <th style="min-width:90px;">가능성</th>
-            <th style="min-width:90px;">중대성</th>
+            <th style="min-width:75px;">피해형태</th>
+            <th style="min-width:45px;">가능성</th>
+            <th style="min-width:45px;">중대성</th>
             <th style="min-width:120px;">위험등급</th>
-            <th style="min-width:320px;">개선대책</th>
-            <th style="min-width:110px;">조치자</th>
-            <th style="min-width:110px;">점검자</th>
+            <th style="min-width:420px;">개선대책</th>
+            <th style="min-width:75px;">조치자</th>
+            <th style="min-width:75px;">점검자</th>
             <th class="center" style="min-width:90px;">관리</th>
           </tr>
         </thead>
@@ -610,6 +636,12 @@ function syncRoundTitle(){
   roundEl.value = v;
   roundTextEl.textContent = String(v);
 }
+// ✅ 회차 기반 제목 생성 (v2.1)
+function makeTitleByRound(round){
+  const r = Math.max(1, Number(round || 1));
+  return `위험성평가서 제 ${r}회차`;
+}
+
 roundEl.addEventListener("input", syncRoundTitle);
 roundEl.addEventListener("change", syncRoundTitle);
 syncRoundTitle();
@@ -1033,16 +1065,24 @@ function collectData(){
 
 async function saveToFirestore(){
   const data = collectData();
+ // ✅ [추가] 저장 시 제목 강제 고정
+  const fixedTitle = makeTitleByRound(data.round);
+  roundTextEl.textContent = data.round;   // 상단 제목 즉시 고정
   const id = makeDocId(data.site, data.round);
   const ref = doc(db, "riskAssessments", id);
 
   btnSave.disabled = true;
   try{
     const existing = await getDoc(ref);
-    const payload = {
-      ...data,
-      updatedAt: serverTimestamp(),
-    };
+const payload = {
+  ...data,
+
+  // ✅ [추가] 고정된 제목 저장
+  title: fixedTitle,
+
+  updatedAt: serverTimestamp(),
+};
+
     if(!existing.exists()){
       payload.createdAt = serverTimestamp();
     }
@@ -1113,6 +1153,9 @@ async function loadPreviousRound(){
     fillMeta(data.meta);
     fillRisks(data.risks);
     fillSummary(data.summary);
+// ✅ [추가] 제목은 항상 현재 회차 기준
+roundTextEl.textContent = roundEl.value;
+
 
     setSummaryState("대기", "idle");
     toast(`전회차(${prevRound}) 복사 완료`);
