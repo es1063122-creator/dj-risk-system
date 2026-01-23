@@ -65,15 +65,17 @@
       min-width:280px;
     }
     .mark{
-      width:42px;height:42px;border-radius:14px;
-      background:linear-gradient(135deg, #0a2a4f 0%, #003a7a 55%, #195cc8 100%);
-      box-shadow:0 12px 24px rgba(0,64,128,.18);
-      flex:0 0 auto;
+      width:auto;
+      height:auto;
+      background:none;
+      box-shadow:none;
+      border-radius:0;
+      padding:0;
     }
     .titles .h1{
       font-weight:900;
-      font-size:18px;
-      line-height:1.15;
+      font-size:22px;
+      line-height:1.2;
       margin:0;
     }
     .titles .sub{
@@ -126,7 +128,7 @@
     }
     .field{display:flex; flex-direction:column; gap:6px;}
     .label{
-      font-size:12px;
+      font-size:14px;
       font-weight:900;
       color:#2b3a5c;
       letter-spacing:-.2px;
@@ -298,28 +300,66 @@
       max-width:calc(100vw - 32px);
     }
 
-    /* ===== Print / PDF ===== */
-    @page { size: A4 landscape; margin: 10mm; }
-    @media print{
-      body{background:#fff}
-      .wrap{padding:0}
-      .card{box-shadow:none; border-radius:12px}
-      .btns, .rowBtns, .toast{display:none !important}
-      .tableWrap{border:1px solid #bbb}
-      thead th{background:#f3f6ff}
-      input, select, textarea{border:1px solid #bbb; box-shadow:none}
+   /* ===== Print / PDF ===== */
+@page { size: A4 landscape; margin: 10mm; }
+
+/* 기본 화면에서는 숨김 */
+.print-approval{
+  display:none;
+}
+
+@media print{
+  body{background:#fff}
+  .wrap{padding:0}
+  .card{box-shadow:none; border-radius:12px}
+  .btns, .rowBtns, .toast{display:none !important}
+  .tableWrap{border:1px solid #bbb}
+  thead th{background:#f3f6ff}
+  input, select, textarea{border:1px solid #bbb; box-shadow:none}
+
+  /* ===== 우측 상단 사인용 결재 (1페이지 전용) ===== */
+  .print-approval{
+    display:flex;
+    position:absolute;
+    top:8mm;
+    right:10mm;
+    gap:6mm;
+    font-size:10.5px;
+  }
+
+  .print-approval .sig{
+    display:flex;
+    align-items:center;
+    gap:2mm;
+    white-space:nowrap;
+  }
+
+  .print-approval .sig span{
+    display:inline-block;
+    width:22mm;        /* ← 사인 가로폭 */
+    height:6mm;
+    border-bottom:1px solid #000;
+  }
+
+  /* ✅ 두 번째 페이지부터는 결재란 숨김 */
+  .card:not(:first-of-type) .print-approval{
+    display:none !important;
+  }
+}
+
+
     }
 /* ===== v3.2 로고 표시 ===== */
 .mark.logo{
-  background:#fff;
+  background:none;
   display:flex;
   align-items:center;
-  justify-content:center;
+  justify-content:flex-start;
 }
 
 .mark.logo img{
-  width:26px;
-  height:26px;
+  width:36px;
+  height:36px;
   object-fit:contain;
 }
 
@@ -361,6 +401,15 @@
         <button class="btn" id="btnLoadPrev" type="button">전회차 불러오기</button>
         <button class="btn primary" id="btnSave" type="button">저장</button>
       </div>
+
+         <!-- ===== 인쇄용 사인 결재 (우측 상단) ===== -->
+<div class="print-approval">
+  <div class="sig">작성 <span></span></div>
+  <div class="sig">검토 <span></span></div>
+  <div class="sig">승인 <span></span></div>
+</div>
+
+
     </div>
   </div>
 
@@ -536,7 +585,7 @@
    0) 설정 (키/프로젝트)
 ======================= */
 // ✅ Gemini API Key: 본인 키로 교체
-const GEMINI_API_KEY = "AIzaSyA9TGBqlmghmXFim6sLSwClnf350hBUSZg";
+const GEMINI_API_KEY = "AIzaSyDYQ-jmfZS_yneOR0NXdTQ6Kfk2Oj9QXrE";
 const GEMINI_MODEL = "gemini-2.0-flash";
 
 // ✅ Firebase (사용자 제공 config)
