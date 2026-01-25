@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>동진토건(주) 위험성평가</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --main:#0b2a4f;
+  --blue:#1f5bd8;
+  --bg:#f4f7ff;
+  --danger:#ef4444;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:"Noto Sans KR",sans-serif;
+  background:var(--bg);
+  color:#0b1b3b;
+  line-height:1.6;
+}
+
+/* ===== COMMON ===== */
+.section{
+  max-width:1100px;
+  margin:0 auto;
+  padding:50px 20px;
+}
+.fade{
+  opacity:0;
+  transform:translateY(30px);
+  transition:.8s ease;
+}
+.fade.show{
+  opacity:1;
+  transform:none;
+}
+
+/* ===== HEADER ===== */
+.header{
+  background:linear-gradient(135deg,#0b2a4f,#1f5bd8);
+  color:#fff;
+  text-align:center;
+  padding:60px 20px 50px;
+}
+.header h1{
+  font-size:32px;
+  font-weight:800;
+  margin-bottom:10px;
+}
+.header p{
+  font-size:15px;
+  opacity:.95;
+}
+
+/* ===== GRID ===== */
+.type-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:22px;
+  margin-top:36px;
+}
+
+/* ===== CARD ===== */
+.type-card{
+  background:#fff;
+  border-radius:26px;
+  padding:26px 24px;
+  box-shadow:0 20px 45px rgba(0,0,0,.08);
+  transition:.3s;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  border:2px solid transparent;
+}
+.type-card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 26px 55px rgba(0,0,0,.14);
+}
+
+.type-card.ad-hoc{
+  border-color:var(--danger);
+}
+
+.type-card h2{
+  font-size:21px;
+  font-weight:800;
+  margin-bottom:8px;
+}
+.type-card .when{
+  font-size:13px;
+  font-weight:700;
+  margin-bottom:12px;
+  color:var(--blue);
+}
+.type-card.ad-hoc .when{
+  color:var(--danger);
+}
+
+.type-card p{
+  font-size:14px;
+  color:#555;
+  margin-bottom:14px;
+}
+
+.type-card ul{
+  font-size:13px;
+  color:#444;
+  padding-left:18px;
+  margin-bottom:20px;
+}
+.type-card li{
+  margin-bottom:5px;
+}
+
+/* ===== BUTTON ===== */
+.type-card button{
+  align-self:flex-start;
+  background:linear-gradient(135deg,#1f5bd8,#3b82f6);
+  color:#fff;
+  border:none;
+  padding:12px 26px;
+  border-radius:30px;
+  font-size:14px;
+  font-weight:700;
+  cursor:pointer;
+}
+.type-card.ad-hoc button{
+  background:linear-gradient(135deg,#ef4444,#f97316);
+}
+
+/* ===== FOOTER ===== */
+footer{
+  text-align:center;
+  font-size:12px;
+  color:#777;
+  padding:24px 10px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+<section class="header">
+  <h1>동진토건(주) 위험성평가</h1>
+  <p>
+    본 시스템은 <b>현장 단위</b>로<br>
+    위험성평가를 작성·관리합니다.
+  </p>
+</section>
+
+<!-- CONTENT -->
+<section class="section">
+  <div class="type-grid">
+
+    <!-- 최초 -->
+    <div class="type-card fade">
+      <div>
+        <h2>📄 최초 위험성평가</h2>
+        <div class="when">✔ 현장 최초 1회</div>
+        <p>
+          공사 시작 전 현장의 기본 위험요인을<br>
+          설정하는 기준 위험성평가입니다.
+        </p>
+        <ul>
+          <li>동일 현장 1회 등록</li>
+          <li>엑셀 기반 등록</li>
+          <li>정기·수시 기준선</li>
+        </ul>
+      </div>
+      <button onclick="location.href='1-risk.html'">
+        최초 위험성평가 →
+      </button>
+    </div>
+
+    <!-- 정기 -->
+    <div class="type-card fade">
+      <div>
+        <h2>🔁 정기 위험성평가</h2>
+        <div class="when">✔ 계획된 주기</div>
+        <p>
+          최초 위험성평가를 기준으로<br>
+          작업기간별 위험요인을 재점검합니다.
+        </p>
+        <ul>
+          <li>주기적 관리</li>
+          <li>TBM 연계</li>
+          <li>근로자 확인</li>
+        </ul>
+      </div>
+      <button onclick="location.href='2-risk.html'">
+        정기 위험성평가 →
+      </button>
+    </div>
+
+    <!-- 수시 -->
+    <div class="type-card ad-hoc fade">
+      <div>
+        <h2>⚠️ 수시 위험성평가</h2>
+        <div class="when">✔ 변경·사고 즉시</div>
+        <p>
+          공정 변경 또는 사고 발생 시<br>
+          즉시 위험요인을 재평가합니다.
+        </p>
+        <ul>
+          <li>작업방법 변경</li>
+          <li>신규 위험 발생</li>
+          <li>재발 방지 목적</li>
+        </ul>
+      </div>
+      <button onclick="location.href='3-risk.html'">
+        수시 위험성평가 →
+      </button>
+    </div>
+
+  </div>
+</section>
+
+<footer>
+  위험성평가는 현장별 안전보건관리 책임에 따라 수행됩니다. KDH-safety
+</footer>
+
+<script>
+const fades=document.querySelectorAll('.fade');
+const observer=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.classList.add('show');
+    }
+  });
+},{threshold:.15});
+fades.forEach(el=>observer.observe(el));
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1849 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>동진토건 수시 위험성평가 v1.0SR FINAL (Secure)</title>
+  <link rel="icon" type="image/x-icon"
+        href="https://raw.githubusercontent.com/es1063122-creator/dj-risk-system/main/djlogo.ico">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --dj:#004080;
+      --dj2:#2a6cf6;
+      --bg:#eef2f8; 
+      --card:#ffffff;
+      --line:#d0d7e6; 
+      --ink:#0b1b3b;
+      --muted:#475467;
+      --good:#12b76a;
+      --warn:#f59e0b;
+      --bad:#ef4444;
+
+      --r:16px;
+      --shadow:0 10px 26px rgba(0,64,128,.10);
+      --shadow2:0 12px 30px rgba(0,64,128,.14);
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:"Noto Sans KR", system-ui,-apple-system,"Segoe UI",sans-serif;
+      background:var(--bg);
+      color:var(--ink);
+    }
+
+    /* ✅ 버전1 느낌: 화면 가로 꽉 차게 + 밀도 유지 */
+    .wrap{
+      width:100%;
+      margin:0;
+      padding:14px 16px 24px;
+    }
+
+    .card{
+      background:var(--card);
+      border:1.5px solid #cfd7ea;
+      border-radius:18px;
+      box-shadow:0 8px 22px rgba(0,40,90,.10);
+      padding:14px;
+      margin-bottom:12px;
+      position:relative;
+    }
+
+    /* ===== Header (버전1 스타일) ===== */
+    .header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+      position:relative;
+    }
+    .brand{
+      display:flex;
+      align-items:flex-start;
+      gap:10px;
+      min-width:280px;
+    }
+    .mark{
+      width:auto;
+      height:auto;
+      background:none;
+      box-shadow:none;
+      border-radius:0;
+      padding:0;
+    }
+    .titles .h1{
+      font-weight:900;
+      font-size:22px;
+      line-height:1.2;
+      margin:0;
+    }
+    .titles .sub{
+      font-size:12px;
+      color:var(--muted);
+      margin-top:3px;
+      line-height:1.25;
+    }
+
+    .btns{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:flex-end;
+    }
+    .btn{
+      border:1px solid rgba(42,108,246,.22);
+      background:#e6edff;
+      color:#0b2a5a;;
+      font-weight:900;
+      font-size:12.5px;
+      padding:10px 12px;
+      border-radius:12px;
+      cursor:pointer;
+      user-select:none;
+      box-shadow:none;
+    }
+    .btn:hover{filter:brightness(.99)}
+    .btn:active{transform:translateY(1px)}
+    .btn.primary{
+      background:var(--dj);
+      border-color:rgba(0,64,128,.2);
+      color:#fff;
+      box-shadow:var(--shadow2);
+    }
+    .btn.danger{
+      background:#fff;
+      color:#b42318;
+      border-color:rgba(239,68,68,.22);
+    }
+    .btn:disabled{opacity:.55; cursor:not-allowed; transform:none}
+
+    /* ===== Form grid (버전1 밀도) ===== */
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(12, 1fr);
+      gap:10px;
+      align-items:start;
+    }
+    .field{display:flex; flex-direction:column; gap:6px;}
+    .label{
+      font-size:14px;
+      font-weight:900;
+      color:#2b3a5c;
+      letter-spacing:-.2px;
+    }
+    .hint{
+      font-size:11.5px;
+      color:var(--muted);
+      line-height:1.25;
+    }
+    input, select, textarea{
+      width:100%;
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:10px 12px;
+      font-size:13px;
+      background:#fff;
+      outline:none;
+    }
+    textarea{min-height:86px; resize:vertical}
+    input:focus, select:focus, textarea:focus{
+      border-color:rgba(42,108,246,.45);
+      box-shadow:0 0 0 4px rgba(42,108,246,.12);
+    }
+
+    .row2{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+    .hr{height:1px; background:var(--line); margin:12px 0}
+
+    /* ===== Section titles ===== */
+    .sectionTitle{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-bottom:8px;
+    }
+    .sectionTitle .t{
+      font-size:15px;
+      font-weight:900;
+      color:#0b2a5a;
+    }
+    .sectionTitle .desc{
+      font-size:11.5px;
+      color:var(--muted);
+      margin-top:2px;
+    }
+
+    /* ===== KPI Pills (버전1 느낌) ===== */
+    .kpis{display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end;}
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:900;
+      border:1px solid rgba(232,236,246,.95);
+      background:#f1f5ff;
+      border:1.2px solid #cbd6f2;
+      white-space:nowrap;
+    }
+    .dot{width:8px;height:8px;border-radius:50%;}
+    .dot.good{background:var(--good)}
+    .dot.warn{background:var(--warn)}
+    .dot.bad{background:var(--bad)}
+    .dot.idle{background:var(--dj2)}
+
+    /* ===== Table ===== */
+    .tableWrap{
+      border:1px solid rgba(232,236,246,.95);
+      border-radius:14px;
+      overflow:auto;
+      background:#fff;
+    }
+    table{
+      width:100%;
+      border-collapse:separate;
+      border-spacing:0;
+      min-width:1320px; /* 버전1처럼 넉넉 */
+    }
+    thead th{
+      position:sticky;
+      top:0;
+      z-index:2;
+      background:#e9f0ff; 
+      border-bottom:2px solid #b8c6e6;
+      padding:10px 8px;
+      font-size:12.5px;
+      color:#102a56;
+      font-weight:900;
+      text-align:left;
+      white-space:nowrap;
+    }
+    tbody td{
+      border-bottom:1.2px solid #d6deef;
+      padding:8px;
+      vertical-align:top;
+      background:#fff;
+    }
+    tbody tr:hover td{
+      background:#f2f6ff;
+    }
+
+    tbody tr:hover td{background:#fbfdff}
+    .center{text-align:center}
+    .w-ck{width:44px}
+    .w-no{width:54px}
+
+    /* 테이블 안 input/textarea: 버전1처럼 낮고 깔끔 */
+    .tIn, .tSel, .tTa{
+      width:100%;
+      border:1.3px solid #c6d0e6;
+      border-radius:12px;
+      padding:5px 6px;
+      font-size:11.5px;
+      line-height:1.25;
+      color:#0b1b3b;
+      background:#ffffff;
+    }
+      .tIn:focus, .tTa:focus{
+      border-color:#2a6cf6;
+      box-shadow:0 0 0 3px rgba(42,108,246,.18);
+    }
+
+    .tTa{min-height:66px}
+    .miniNote{
+      font-size:11px;
+      color:var(--muted);
+      margin-top:4px;
+    }
+
+    .scoreBox{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+    .scorePill{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:6px 10px;
+      border-radius:999px;
+      font-weight:900;
+      font-size:12px;
+      width:max-content;
+      border:1px solid rgba(232,236,246,.95);
+      background:#fff;
+    }
+   .scoreLow{
+  border-color:#12b76a;
+  background:#e9f9f1;
+}
+.scoreMid{
+  border-color:#f59e0b;
+  background:#fff4e5;
+}
+.scoreHigh{
+  border-color:#ef4444;
+  background:#fdecec;
+}
+
+
+    .rowBtns{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:10px;
+      align-items:center;
+      justify-content:flex-start;
+    }
+
+    /* ===== Education Section ===== */
+    .eduGrid{
+      display:grid;
+      grid-template-columns:repeat(12, 1fr);
+      gap:10px;
+      margin-top:10px;
+    }
+
+    /* ===== Toast ===== */
+    .toast{
+      position:fixed;
+      left:16px;
+      bottom:16px;
+      background:#0b1b3b;
+      color:#fff;
+      padding:10px 12px;
+      border-radius:12px;
+      box-shadow:0 12px 30px rgba(0,0,0,.18);
+      font-size:13px;
+      display:none;
+      z-index:9999;
+      max-width:calc(100vw - 32px);
+    }
+
+    /* ===== v3.2 로고 표시 ===== */
+    .mark.logo{
+      background:none;
+      display:flex;
+      align-items:center;
+      justify-content:flex-start;
+    }
+    .mark.logo img{
+      width:36px;
+      height:36px;
+      object-fit:contain;
+    }
+
+    /* ===== v3.1 컬럼 비율 미세조정 ===== */
+   /* ===== 컬럼 폭 압축 (버전1 밀도 유지) ===== */
+
+/* 작업명 */
+th:nth-child(3){ min-width:120px; }
+
+/* 작업위치 */
+th:nth-child(4){ min-width:110px; }
+
+/* 피해형태 */
+th:nth-child(6){ min-width:60px; }
+
+/* 가능성 */
+th:nth-child(7){ min-width:38px; }
+
+/* 중대성 */
+th:nth-child(8){ min-width:38px; }
+
+/* 위험등급 */
+th:nth-child(9){ min-width:90px; }
+
+/* 개선대책 (핵심이므로 최소만 유지) */
+th:nth-child(10){ min-width:360px; }
+
+/* 조치자 */
+th:nth-child(11){ min-width:60px; }
+
+/* 점검자 */
+th:nth-child(12){ min-width:60px; }
+
+
+    /* ===== Print / PDF ===== */
+    @page { size: A4 landscape; margin: 10mm; }
+
+    /* 기본 화면에서는 숨김 */
+    .print-approval{
+      display:none;
+    }
+
+   @media print{
+    body{background:#fff}
+    .wrap{padding:0}
+    .card{box-shadow:none; border-radius:12px}
+
+    /* UI 제거 */
+    .btns,
+    .rowBtns,
+    .toast{
+      display:none !important;
+    }
+
+    table{
+      width:100% !important;
+      min-width:100% !important;
+      table-layout:fixed !important;
+    }
+
+    .tableWrap{
+      border:1px solid #bbb;
+      overflow:visible !important;
+    }
+
+    thead th{background:#f3f6ff}
+
+    input, select, textarea{
+      border:1px solid #bbb;
+      box-shadow:none;
+    }
+
+    th:nth-child(1),
+    td:nth-child(1){ display:none !important; }
+
+    th:last-child,
+    td:last-child{ display:none !important; }
+
+    th:nth-child(2), td:nth-child(2){width:36px}
+    th:nth-child(3), td:nth-child(3){width:90px}
+    th:nth-child(4), td:nth-child(4){width:90px}
+    th:nth-child(5), td:nth-child(5){width:170px}
+    th:nth-child(6), td:nth-child(6){width:55px;text-align:center}
+    th:nth-child(7), td:nth-child(7){width:45px;text-align:center}
+    th:nth-child(8), td:nth-child(8){width:45px;text-align:center}
+    th:nth-child(9), td:nth-child(9){width:70px;text-align:center}
+    th:nth-child(10), td:nth-child(10){width:auto}
+    th:nth-child(11), td:nth-child(11){width:65px}
+    th:nth-child(12), td:nth-child(12){width:65px}
+
+    td:nth-child(3) input,
+    td:nth-child(4) input{
+      white-space:normal !important;
+      word-break:break-word !important;
+      height:auto !important;
+      min-height:36px;
+    }
+
+    td:nth-child(5) textarea,
+    td:nth-child(10) textarea{
+      overflow:visible !important;
+      height:auto !important;
+      max-height:none !important;
+      white-space:pre-wrap !important;
+      word-break:break-word !important;
+    }
+
+    tr, td{
+      page-break-inside:auto !important;
+      break-inside:auto !important;
+    }
+.print-approval{
+  display:flex;
+  position:absolute;
+  top:8mm;
+  right:10mm;
+  gap:10mm;                 /* 간격 넓힘 */
+  font-size:11px;           /* 조금 키움 */
+  align-items:flex-end;
+}
+
+.print-approval .sig{
+  display:flex;
+  align-items:flex-end;
+  gap:4mm;                  /* '작성' 글자와 서명칸 사이 */
+  white-space:nowrap;
+  font-weight:800;
+  color:#000;
+}
+
+/* 우측 서명 여백 + 밑줄 */
+.print-approval .sig span{
+  display:inline-block;
+  width:26mm;               /* 서명칸 더 넓게 */
+  height:7mm;               /* 서명칸 더 높게 */
+  border-bottom:1.6px solid #000;
+}
+
+
+    .card:not(:first-of-type) .print-approval{
+      display:none !important;
+    }
+ /* ===============================
+     🔥 textarea를 "출력용 텍스트"로 강제 변환
+     =============================== */
+
+  /* 위험요인 + 개선대책 textarea */
+  td textarea{
+    overflow: visible !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+
+    resize: none !important;
+    white-space: pre-wrap !important;
+    word-break: break-word !important;
+
+    display: block !important;
+  }
+
+  /* 기존 화면용 최소 높이 완전 무력화 */
+  .tTa{
+    min-height: 0 !important;
+  }
+
+  /* textarea 내부 스크롤 완전 제거 */
+  textarea::-webkit-scrollbar{
+    display:none !important;
+  }
+
+  /* 행 단위 페이지 분할 허용 */
+  tr{
+    page-break-inside: auto !important;
+    break-inside: auto !important;
+    }
+  }
+/* ===============================
+   🔥 PDF 출력 전용 텍스트 처리
+=============================== */
+
+/* 화면에서는 숨김 */
+.printText{
+  display:none;
+}
+
+/* 인쇄(PDF)에서만 표시 */
+@media print{
+
+  /* 입력용 textarea는 출력 금지 */
+  textarea{
+    display:none !important;
+  }
+
+  /* 출력용 텍스트만 표시 */
+  .printText{
+    display:block !important;
+    white-space:pre-wrap;
+    word-break:break-word;
+    font-size:10.5px;
+    line-height:1.3;
+  }
+
+  /* 행 분할 허용 */
+  tr{
+    page-break-inside:auto !important;
+    break-inside:auto !important;
+  }
+}
+
+/* =========================
+   ✅ 입력 구분 색상
+   - 관리자 수기 입력: adminInput
+   - AI 자동 생성: aiInput
+========================= */
+
+/* 관리자 수기 입력(연한 웜톤) */
+.adminInput{
+  background:#fff6e9;
+  border-color:#f2c48d !important;
+  color:var(--ink);
+}
+.adminInput:focus{
+  background:#fff1dc;
+  border-color:#f59e0b !important;
+  box-shadow:0 0 0 3px rgba(245,158,11,.18);
+}
+
+/* =========================
+   🤖 AI 분석 결과 전용 색상 (통일)
+   - 피해형태 / 가능성 / 중대성 / 개선대책
+========================= */
+.aiInput{
+  background:#eaf1ff;              /* ❗ 흰색 아님, 연한 블루 */
+  border:1.5px solid #9db7ff !important;
+  color:#0a2458;
+  font-weight:600;
+}
+
+.aiInput:focus{
+  background:#e1ecff;
+  border-color:#2a6cf6 !important;
+  box-shadow:0 0 0 3px rgba(42,108,246,.22);
+}
+
+
+
+</style>
+</head>
+
+<body>
+<div class="wrap">
+
+  <!-- ===== Header (버전1 기준) ===== -->
+  <div class="card">
+    <div class="header">
+      <div class="brand">
+        <div class="mark logo">
+          <img src="https://raw.githubusercontent.com/es1063122-creator/dj-risk-system/main/djlogo.ico" alt="동진토건 로고">
+        </div>
+
+        <div class="titles">
+          <p class="h1">위험성평가서 제 <span id="roundText">1</span>회차</p>
+          <div class="sub">동진토건(주) · 수시 위험성평가 시스템 (단일 HTML + Gemini 자동분석 + 저장/전회차) — <b>API Key 노출 0</b></div>
+        </div>
+      </div>
+
+      <!-- ✅ 버전1 버튼 배치 유지 + 저장/전회차는 같은 톤으로 자연스럽게 추가 -->
+      <div class="btns">
+        <button class="btn" id="btnAddRowTop" type="button">행 추가</button>
+        <button class="btn" id="btnDeleteSelectedTop" type="button">선택 삭제</button>
+        <button class="btn primary" id="btnGenerateTop" type="button">교육/지시사항 생성</button>
+        <button class="btn" id="btnPrintTop" type="button">PDF/인쇄</button>
+
+        <button class="btn" id="btnLoadPrev" type="button">전회차 불러오기</button>
+        <button class="btn primary" id="btnSave" type="button">저장</button>
+      </div>
+
+      <!-- ===== 인쇄용 사인 결재 (우측 상단) ===== -->
+      <div class="print-approval">
+        <div class="sig">작성 <span></span></div>
+        <div class="sig">검토 <span></span></div>
+        <div class="sig">승인 <span></span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 기본 정보 (버전1 밀도 유지) ===== -->
+  <div class="card">
+    <!-- ===== 전회차 공종 대분류 선택 ===== -->
+<div class="card" id="prevTradeBox" style="display:none;">
+  <div class="sectionTitle">
+    <div>
+      <div class="t">전회차 공종 선택</div>
+      <div class="desc">전회차에 저장된 공종 대분류를 선택하세요.</div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="field" style="grid-column: span 4;">
+      <div class="label">공종 대분류</div>
+      <select id="prevTradeSelect"></select>
+    </div>
+
+    <div class="field" style="grid-column: span 8; display:flex; align-items:flex-end;">
+      <button class="btn primary" id="btnConfirmPrevTrade" type="button">
+        선택한 공종 불러오기
+      </button>
+      <button class="btn" id="btnCancelPrevTrade" type="button" style="margin-left:8px;">
+        취소
+      </button>
+    </div>
+  </div>
+</div>
+
+    <div class="grid">
+      <div class="field" style="grid-column: span 3;">
+        <div class="label">제목(회차)</div>
+        <input id="round" type="number" min="1" value="1">
+        <div class="hint">예: “위험성평가서 제 1회차”</div>
+      </div>
+
+      <div class="field" style="grid-column: span 3;">
+        <div class="label">현장</div>
+        <!-- ✅ sites 컬렉션 연동: 있으면 자동으로 드롭다운 채움 -->
+        <!-- ✅ 없으면 아래 기본 옵션 유지(백업) -->
+        <select id="site">
+          <option value="paju-pmc">파주pmc</option>
+          <option value="ulsan-taehwagang">울산태화강</option>
+          <option value="ulsan-ujeong">울산우정동</option>
+          <option value="gangbyeon-ipark">강변아이파크</option>
+          <option value="mapo-3-1">마포로3-1</option>
+          <option value="gimhae-science">김해사이언스</option>
+        </select>
+        <div class="hint">* Firestore sites 컬렉션이 있으면 자동으로 최신 현장목록으로 바뀝니다.</div>
+      </div>
+
+      <div class="field" style="grid-column: span 3;">
+        <div class="label">작성자</div>
+        <input id="writer" placeholder="예: 김대홍">
+      </div>
+
+      <div class="field" style="grid-column: span 3;">
+        <div class="label">회의일자</div>
+        <input id="meetingDate" type="date">
+      </div>
+
+      <div class="field" style="grid-column: span 3;">
+        <div class="label">평가기간 시작</div>
+        <input id="periodStart" type="date">
+      </div>
+
+      <div class="field" style="grid-column: span 3;">
+        <div class="label">평가기간 종료</div>
+        <input id="periodEnd" type="date">
+      </div>
+
+      <div class="field" style="grid-column: span 3;">
+  <div class="label">공종 대분류</div>
+  <input id="tradeLarge" list="tradeLargeList" placeholder="예: 토공 / 철근콘크리트 / 가설">
+  <datalist id="tradeLargeList"></datalist>
+</div>
+
+<div class="field" style="grid-column: span 3;">
+  <div class="label">공종 소분류</div>
+  <input id="tradeSmall" list="tradeSmallList" placeholder="예: 굴착 / 거푸집 / 안전시설">
+  <datalist id="tradeSmallList"></datalist>
+</div>
+
+      <div class="field" style="grid-column: span 2;">
+        <div class="label">작업일수</div>
+        <input id="workDays" type="number" min="0" placeholder="예: 5">
+      </div>
+
+      <div class="field" style="grid-column: span 5;">
+        <div class="label">직종별 인원</div>
+        <textarea id="manpower" placeholder="예:
+- 굴틀목공 4
+- 철근공 3
+- 장비기사 1"></textarea>
+      </div>
+
+      <div class="field" style="grid-column: span 5;">
+        <div class="label">투입장비</div>
+        <textarea id="equipments" placeholder="예:
+- 굴착기(0.7) 1대
+- 지게차 1대"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 위험성평가 상세 (버전1 기준 + KPI) ===== -->
+  <div class="card">
+    <div class="sectionTitle">
+      <div>
+        <div class="t">위험성평가 상세</div>
+        <div class="desc">위험요인 입력 후 포커스를 벗어나면 AI가 자동으로 피해형태·가능성·중대성·개선대책을 생성합니다.</div>
+      </div>
+      <div class="kpis">
+        <span class="pill"><span class="dot idle"></span>행 수: <b id="kpiRows">3</b></span>
+        <span class="pill"><span class="dot bad"></span>고위험(7~9): <b id="kpiHigh">0</b></span>
+        <span class="pill"><span class="dot warn"></span>중위험(4~6): <b id="kpiMid">0</b></span>
+        <span class="pill"><span class="dot good"></span>저위험(1~3): <b id="kpiLow">0</b></span>
+      </div>
+    </div>
+
+    <div class="tableWrap">
+      <table>
+        <thead>
+          <tr>
+            <th class="center w-ck"><input type="checkbox" id="ckAll"></th>
+            <th class="center w-no">No</th>
+            <th style="min-width:160px;">작업명</th>
+            <th style="min-width:140px;">작업위치</th>
+            <th style="min-width:260px;">위험요인 (AI 분석 트리거)</th>
+            <th style="min-width:75px;">피해형태</th>
+            <th style="min-width:45px;">가능성</th>
+            <th style="min-width:45px;">중대성</th>
+            <th style="min-width:120px;">위험등급</th>
+            <th style="min-width:420px;">개선대책</th>
+            <th style="min-width:75px;">조치자</th>
+            <th style="min-width:75px;">점검자</th>
+            <th class="center" style="min-width:90px;">관리</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+
+    <!-- 버전1 느낌: 하단 행 버튼 -->
+    <div class="rowBtns">
+      <button class="btn" id="btnAddRow" type="button">+ 행 추가</button>
+      <button class="btn danger" id="btnDeleteLast" type="button">마지막 행 삭제</button>
+    </div>
+  </div>
+
+  <!-- ===== 교육/지시사항 (버전1 기준) ===== -->
+  <div class="card">
+    <div class="sectionTitle">
+      <div>
+        <div class="t">교육내용(키워드) · 현장소장 지시사항</div>
+        <div class="desc">“교육/지시사항 생성” 버튼을 누르면, 표의 분석결과를 종합해 자동 작성합니다.</div>
+      </div>
+      <div class="kpis">
+        <span class="pill"><span class="dot idle" id="sumDot"></span><b id="sumState">대기</b></span>
+      </div>
+    </div>
+
+    <div style="margin-top:8px;">
+      <button class="btn primary" id="btnGenerate" type="button">교육/지시사항 생성</button>
+    </div>
+
+    <div class="eduGrid">
+      <div class="field" style="grid-column: span 4;">
+        <div class="label">교육 키워드 1</div>
+        <input id="edu1" class="aiInput" placeholder="자동 생성">
+      </div>
+      <div class="field" style="grid-column: span 4;">
+        <div class="label">교육 키워드 2</div>
+        <input id="edu2" class="aiInput" placeholder="자동 생성">
+      </div>
+      <div class="field" style="grid-column: span 4;">
+        <div class="label">교육 키워드 3</div>
+        <input id="edu3" class="aiInput" placeholder="자동 생성">
+      </div>
+
+      <div class="field" style="grid-column: span 12;">
+        <div class="label">현장소장 지시사항 (맨 마지막)</div>
+        <textarea id="boss" class="aiInput" placeholder="자동 생성 (1~3번 지시사항)"></textarea>
+      </div>
+    </div>
+  </div>
+    <!-- ===== 전회차 피드백 (신규) ===== -->
+  <div class="card" id="prevFeedbackCard">
+    <div class="sectionTitle">
+      <div>
+        <div class="t">전회차 피드백</div>
+        <div class="desc">전회차 위험요인·개선대책을 불러와 이행결과를 작성합니다.</div>
+      </div>
+    </div>
+
+    <div class="tableWrap">
+      <table style="min-width:1100px">
+        <thead>
+          <tr>
+            <th class="center" style="width:54px;">No</th>
+            <th style="min-width:320px;">전회차 위험요인</th>
+            <th style="min-width:420px;">전회차 개선대책</th>
+            <th style="min-width:320px;">이행결과 (이번 회차 작성)</th>
+          </tr>
+        </thead>
+        <tbody id="prevFeedbackBody">
+          <tr>
+            <td class="center" colspan="4" style="color:var(--muted);padding:14px;">
+              전회차 불러오기를 실행하면 여기에 항목이 표시됩니다.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ===== 근로자 의견청취 (신규) ===== -->
+  <div class="card">
+    <div class="sectionTitle">
+      <div>
+        <div class="t">근로자 의견청취</div>
+        <div class="desc">작업 중 느낀 위험요인·불편사항·개선요청을 자유롭게 작성(공란 가능)</div>
+      </div>
+    </div>
+
+    <textarea id="workerOpinion" class="adminInput" placeholder="근로자 의견을 자유롭게 작성하세요 (공란 가능)"
+  style="min-height:140px;"></textarea>
+
+  </div>
+
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+/* =========================================================
+   v1.0SR FINAL (Secure)
+   - ✅ 기존 기능 100% 유지
+   - ✅ Gemini API Key 제거 (노출 0)
+   - ✅ Firebase Functions(analyzeRisk / generateEducation)로 프록시 호출
+   - ✅ Firestore 저장 + 전회차 불러오기 유지
+   - ✅ sites 컬렉션 있으면 현장 드롭다운 자동 로딩(없으면 기존 옵션 유지)
+========================================================= */
+
+/* =======================
+   0) 설정
+======================= */
+// ✅ Firebase Functions URL (프로젝트/리전 고정)
+const FUNCTIONS_BASE = "https://asia-northeast3-dongjin-risk-system.cloudfunctions.net";
+// ✅ 사용 함수명
+const FN_ANALYZE = "analyzeRisk";
+const FN_EDU = "generateEducation"; // 이미 배포되어 있으면 사용, 없으면 analyzeRisk로 자동 fallback
+
+/* ✅ Firebase (사용자 제공 config 그대로) */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+import {
+  getFirestore, doc, getDoc, setDoc, serverTimestamp,
+  collection, getDocs, addDoc, query, where
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDO0z7h5WVsyHob7PAJLzOBFi8wCifAsdY",
+  authDomain: "dongjin-risk-system.firebaseapp.com",
+  projectId: "dongjin-risk-system",
+  storageBucket: "dongjin-risk-system.firebasestorage.app",
+  messagingSenderId: "419989869270",
+  appId: "1:419989869270:web:b1d2dae3d82a7110732f77",
+  measurementId: "G-WP7514NHWL"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+/* =======================
+   1) DOM
+======================= */
+const $ = (id)=>document.getElementById(id);
+
+const roundEl = $("round");
+const roundTextEl = $("roundText");
+const siteEl = $("site");
+const writerEl = $("writer");
+const meetingDateEl = $("meetingDate");
+const periodStartEl = $("periodStart");
+const periodEndEl = $("periodEnd");
+const tradeLargeEl = $("tradeLarge");
+const tradeSmallEl = $("tradeSmall");
+const workDaysEl = $("workDays");
+const manpowerEl = $("manpower");
+const equipmentsEl = $("equipments");
+
+const tbody = $("tbody");
+const ckAll = $("ckAll");
+
+const btnAddRow = $("btnAddRow");
+const btnAddRowTop = $("btnAddRowTop");
+const btnDeleteSelectedTop = $("btnDeleteSelectedTop");
+const btnDeleteLast = $("btnDeleteLast");
+const btnGenerate = $("btnGenerate");
+const btnGenerateTop = $("btnGenerateTop");
+const btnPrintTop = $("btnPrintTop");
+const btnSave = $("btnSave");
+const btnLoadPrev = $("btnLoadPrev");
+
+const kpiRows = $("kpiRows");
+const kpiHigh = $("kpiHigh");
+const kpiMid  = $("kpiMid");
+const kpiLow  = $("kpiLow");
+
+const edu1 = $("edu1");
+const edu2 = $("edu2");
+const edu3 = $("edu3");
+const boss = $("boss");
+const prevFeedbackBody = $("prevFeedbackBody");
+const workerOpinionEl = $("workerOpinion");
+
+
+const sumDot = $("sumDot");
+const sumState = $("sumState");
+
+const toastEl = $("toast");
+// 전회차 공종 선택 UI
+const prevTradeBox = $("prevTradeBox");
+const prevTradeSelect = $("prevTradeSelect");
+const btnConfirmPrevTrade = $("btnConfirmPrevTrade");
+const btnCancelPrevTrade = $("btnCancelPrevTrade");
+
+
+/* =======================
+   2) Toast
+======================= */
+let toastTimer=null;
+function toast(msg){
+  if(!msg) return;
+  toastEl.textContent = msg;
+  toastEl.style.display = "block";
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>toastEl.style.display="none", 1600);
+}
+
+/* =======================
+   3) 날짜 기본값(오늘)
+======================= */
+(function initDates(){
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = String(now.getMonth()+1).padStart(2,"0");
+  const d = String(now.getDate()).padStart(2,"0");
+  const iso = `${y}-${m}-${d}`;
+  meetingDateEl.value ||= iso;
+  periodStartEl.value ||= iso;
+  periodEndEl.value ||= iso;
+})();
+
+/* =======================
+   4) 회차 제목 동기화
+======================= */
+function syncRoundTitle(){
+  const v = Math.max(1, Number(roundEl.value || 1));
+  roundEl.value = v;
+  roundTextEl.textContent = String(v);
+}
+function makeTitleByRound(round){
+  const r = Math.max(1, Number(round || 1));
+  return `위험성평가서 제 ${r}회차`;
+}
+roundEl.addEventListener("input", syncRoundTitle);
+roundEl.addEventListener("change", syncRoundTitle);
+syncRoundTitle();
+
+/* =======================
+   4-1) ✅ 현장 드롭다운: sites 컬렉션 자동 로딩 (있으면)
+   - siteId: 영문, siteName: 한글
+   - value = siteId, text = siteName (원하면 표기 변경 가능)
+======================= */
+async function loadSitesFromFirestore(){
+  try{
+    const snap = await getDocs(collection(db, "sites"));
+    const list = [];
+    snap.forEach(d=>{
+      const s = d.data();
+      if(s && s.active){
+        list.push({
+          siteId: s.siteId || d.id,
+          siteName: s.siteName || d.id
+        });
+      }
+    });
+    if(!list.length) return;
+
+    // 기존 옵션 유지 대신, Firestore가 있으면 최신으로 교체
+    // (원하면 기존 + 추가로 합칠 수도 있지만, 현장 마스터를 우선)
+    siteEl.innerHTML = "";
+    list.sort((a,b)=>String(a.siteName).localeCompare(String(b.siteName), "ko"));
+    list.forEach(s=>{
+      const opt = document.createElement("option");
+      opt.value = s.siteId;
+      opt.textContent = s.siteName; // 웹에는 한글
+      siteEl.appendChild(opt);
+    });
+
+    toast("현장목록(콘솔 sites) 불러옴");
+  }catch(e){
+    // sites가 없거나 권한/규칙 문제면 조용히 무시(기본 옵션 사용)
+    console.warn("sites load skipped:", e?.message || e);
+  }
+}
+loadSitesFromFirestore();
+loadTradesFromFirestore();
+siteEl.addEventListener("change", loadTradesFromFirestore);
+
+// =======================
+// 4-2) ✅ 공종 드롭다운(datalist) 로딩
+// - tradeMasters/{site}/items 에서 목록 구성
+// - 대분류/소분류를 각각 추천 목록으로 제공
+// =======================
+async function loadTradesFromFirestore(){
+  const site = siteEl.value;
+  if(!site) return;
+
+  try{
+    const ref = collection(db, "tradeMasters", site, "items");
+    const snap = await getDocs(ref);
+
+    const largeSet = new Set();
+    const smallSet = new Set();
+
+    snap.forEach(d=>{
+      const v = d.data();
+      if(v && v.active !== false){
+        if(v.tradeLarge) largeSet.add(String(v.tradeLarge).trim());
+        if(v.tradeSmall) smallSet.add(String(v.tradeSmall).trim());
+      }
+    });
+
+    // datalist 채우기
+    const largeList = $("tradeLargeList");
+    const smallList = $("tradeSmallList");
+
+    largeList.innerHTML = [...largeSet]
+      .sort((a,b)=>a.localeCompare(b,"ko"))
+      .map(v=>`<option value="${v}"></option>`)
+      .join("");
+
+    smallList.innerHTML = [...smallSet]
+      .sort((a,b)=>a.localeCompare(b,"ko"))
+      .map(v=>`<option value="${v}"></option>`)
+      .join("");
+
+    // 옵션: 안내 토스트
+    // toast("공종 목록 불러옴");
+  }catch(e){
+    console.warn("tradeMasters load skipped:", e?.message || e);
+  }
+}
+
+
+/* =======================
+   5) 위험등급 계산 + KPI
+======================= */
+function calcScore(prob, sev){
+  const p = Number(prob||0);
+  const s = Number(sev||0);
+  if(p>=1 && p<=3 && s>=1 && s<=3) return p*s;
+  return 0;
+}
+function scoreLabel(score){
+  if(!score) return "";
+  if(score>=7) return `고(${score})`;
+  if(score>=4) return `중(${score})`;
+  return `저(${score})`;
+}
+function scoreClass(score){
+  if(score>=7) return "scorePill scoreHigh";
+  if(score>=4) return "scorePill scoreMid";
+  if(score>=1) return "scorePill scoreLow";
+  return "scorePill";
+}
+function updateKPIs(){
+  const rows = [...tbody.querySelectorAll("tr")];
+  let low=0, mid=0, high=0;
+  rows.forEach(tr=>{
+    const score = Number(tr.querySelector("[data-role=score]").dataset.score || 0);
+    if(score>=7) high++;
+    else if(score>=4) mid++;
+    else if(score>=1) low++;
+  });
+  kpiRows.textContent = rows.length;
+  kpiHigh.textContent = high;
+  kpiMid.textContent  = mid;
+  kpiLow.textContent  = low;
+}
+
+/* =======================
+   6) AI 호출/파싱
+   - ✅ Functions로 프록시 호출 (API Key 노출 없음)
+======================= */
+function extractSection(fullText, startMarker, endMarker=""){
+  const s = fullText.indexOf(startMarker);
+  if(s < 0) return "";
+  let start = s + startMarker.length;
+  let chunk = fullText.slice(start);
+  if(endMarker){
+    const e = chunk.indexOf(endMarker);
+    if(e >= 0) chunk = chunk.slice(0, e);
+  }
+  chunk = chunk.trim();
+
+  if(startMarker.includes("[가능성]") || startMarker.includes("[중대성]")){
+    const m = chunk.match(/[1-3]/);
+    return m ? m[0] : "";
+  }
+  return chunk;
+}
+
+/* ✅ 공통: Functions 호출 */
+async function callFunction(endpoint, bodyObj){
+  const url = `${FUNCTIONS_BASE}/${endpoint}`;
+  const res = await fetch(url, {
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify(bodyObj || {})
+  });
+  const json = await res.json().catch(()=> ({}));
+  if(!res.ok){
+    throw new Error(json?.error || `Functions 오류(${res.status})`);
+  }
+  return json;
+}
+
+/* ✅ 기존 callGemini 유지 (payload 키만 Functions 기준에 맞춤) */
+async function callGemini(promptText, preferEndpoint = FN_ANALYZE){
+  try{
+    // 🔥 핵심 수정: prompt → riskFactor
+    const out = await callFunction(preferEndpoint, {
+      riskFactor: promptText
+    });
+    return (out?.text || "").trim();
+  }catch(e){
+    // fallback 로직 그대로 유지
+    if(preferEndpoint === FN_EDU){
+      const out2 = await callFunction(FN_ANALYZE, {
+        riskFactor: promptText
+      });
+      return (out2?.text || "").trim();
+    }
+    throw e;
+  }
+}
+
+
+function buildRiskPrompt(riskFactor){
+  return `
+다음 위험요인에 대해 분석해주세요. 반드시 아래 형식으로만 답변하고 다른 설명은 추가하지 마세요:
+
+[피해형태]
+피해 유형을 한 단어로 작성 (예: 추락, 감전, 화재)
+
+[가능성]
+1, 2, 3 중 하나의 숫자만 입력
+
+[중대성]
+1, 2, 3 중 하나의 숫자만 입력
+
+[개선대책]
+각 개선대책을 7~8단어 정도로 구체적이고 실행 가능한 내용으로 작성해주세요.
+1. 첫 번째 개선대책 (구체적인 조치사항 포함)
+2. 두 번째 개선대책 (구체적인 조치사항 포함)
+3. 세 번째 개선대책 (구체적인 조치사항 포함)
+
+위험요인: ${String(riskFactor).replace(/"/g,"'")}
+`.trim();
+}
+
+function buildSummaryPrompt(risksText, solutionsText){
+  return `
+다음 위험요인과 개선대책을 바탕으로 교육내용과 현장소장지시사항을 작성해주세요. 반드시 아래 형식으로만 답변해주세요:
+
+[교육내용1]
+4~6단어 이내로 핵심 키워드만 작성. 괄호 사용 금지
+
+[교육내용2]
+3~5단어 이내로 핵심 키워드만 작성. 괄호 사용 금지
+
+[교육내용3]
+3~5단어 이내로 핵심 키워드만 작성. 괄호 사용 금지
+
+[현장소장지시사항]
+1. 첫 번째 지시사항 (10단어 이내로 짧고 명확하게)
+2. 두 번째 지시사항 (10단어 이내로 짧고 명확하게)
+3. 세 번째 지시사항 (10단어 이내로 짧고 명확하게)
+
+위험요인:
+${risksText}
+
+개선대책:
+${solutionsText}
+`.trim();
+}
+
+/* =======================
+   7) 테이블 Row 생성/렌더
+======================= */
+const rowBusy = new WeakMap(); // {busy:boolean, lastRisk:string}
+
+function renumber(){
+  [...tbody.querySelectorAll("tr")].forEach((tr, idx)=>{
+    tr.querySelector("[data-role=no]").textContent = String(idx+1);
+  });
+  updateKPIs();
+}
+
+function setSummaryState(state, kind="idle"){
+  sumState.textContent = state;
+  sumDot.classList.remove("good","warn","bad","idle");
+  if(kind==="ok") sumDot.classList.add("good");
+  else if(kind==="err") sumDot.classList.add("bad");
+  else if(kind==="busy") sumDot.classList.add("warn");
+  else sumDot.classList.add("idle");
+}
+
+function renderScore(tr){
+  const prob = tr.querySelector("[data-role=prob]").value;
+  const sev  = tr.querySelector("[data-role=sev]").value;
+  const score = calcScore(prob, sev);
+
+  const gradeCell = tr.querySelector("[data-role=score]");
+  gradeCell.dataset.score = String(score || 0);
+  gradeCell.innerHTML = "";
+
+  if(score){
+    const pill = document.createElement("span");
+    pill.className = scoreClass(score);
+    pill.innerHTML = `<span class="dot ${score>=7?'bad':score>=4?'warn':'good'}"></span>${scoreLabel(score)}`;
+    gradeCell.appendChild(pill);
+  }else{
+    const span = document.createElement("span");
+    span.style.color = "var(--muted)";
+    span.style.fontSize = "12px";
+    span.textContent = "자동";
+    gradeCell.appendChild(span);
+  }
+
+  updateKPIs();
+}
+
+function makeRow(prefill=null){
+  const tr = document.createElement("tr");
+  tr.innerHTML = `
+    <td class="center w-ck"><input type="checkbox" data-role="sel"></td>
+    <td class="center w-no" data-role="no"></td>
+
+    <td><input class="tIn adminInput" data-role="workName" placeholder="예: 거푸집 설치"></td>
+    <td><input class="tIn adminInput" data-role="workLoc" placeholder="예: 3층 슬라브"></td>
+
+    <td>
+      <textarea class="tTa adminInput" data-role="risk" placeholder="위험요인 입력 후 포커스 아웃"></textarea>
+      <div class="printText" data-print="risk"></div>
+      <div class="miniNote">AI 자동분석</div>
+    </td>
+
+    <td><input class="tIn aiInput" data-role="damage" placeholder="자동"></td>
+    <td><input class="tIn aiInput" data-role="prob" placeholder="1~3" inputmode="numeric"></td>
+    <td><input class="tIn aiInput" data-role="sev" placeholder="1~3" inputmode="numeric"></td>
+
+    <td data-role="score" class="center" style="min-width:120px">
+      <span style="color:var(--muted);font-size:12px">자동</span>
+    </td>
+
+    <td>
+      <textarea class="tTa aiInput" data-role="solution" placeholder="자동 생성"></textarea>
+      <div class="printText" data-print="solution"></div>
+    </td>
+
+    <td><input class="tIn adminInput" data-role="actor" placeholder=""></td>
+    <td><input class="tIn adminInput" data-role="checker" placeholder=""></td>
+
+    <td class="center">
+      <button class="btn danger" data-role="del" type="button"
+        style="padding:6px 8px;border-radius:8px;font-size:11px">삭제</button>
+    </td>
+  `;
+
+  rowBusy.set(tr, { busy:false, lastRisk:"" });
+
+  // prefill
+  if(prefill){
+    tr.querySelector("[data-role=workName]").value = prefill.workName || "";
+    tr.querySelector("[data-role=workLoc]").value  = prefill.workLoc  || "";
+    tr.querySelector("[data-role=risk]").value     = prefill.risk     || "";
+    tr.querySelector("[data-role=damage]").value   = prefill.damage   || "";
+    tr.querySelector("[data-role=prob]").value     = prefill.prob ? String(prefill.prob) : "";
+    tr.querySelector("[data-role=sev]").value      = prefill.sev ? String(prefill.sev) : "";
+    tr.querySelector("[data-role=solution]").value = prefill.solution || "";
+    tr.querySelector("[data-role=actor]").value    = prefill.actor    || "";
+    tr.querySelector("[data-role=checker]").value  = prefill.checker  || "";
+  }
+
+  // 삭제
+  tr.querySelector("[data-role=del]").addEventListener("click", ()=>{
+    tr.remove();
+    renumber();
+    if(tbody.children.length === 0){
+      addRow(); addRow(); addRow();
+      renumber();
+    }
+  });
+
+  // 위험요인 blur → AI 분석 (버전1 핵심)
+  tr.querySelector("[data-role=risk]").addEventListener("blur", ()=> analyzeRow(tr));
+
+  // 가능성/중대성 입력 → 위험등급 자동
+  ["prob","sev"].forEach(k=>{
+    tr.querySelector(`[data-role=${k}]`).addEventListener("input", ()=> renderScore(tr));
+    tr.querySelector(`[data-role=${k}]`).addEventListener("blur", ()=> renderScore(tr));
+  });
+
+  // prefill일 때 등급 표시
+  renderScore(tr);
+
+  return tr;
+}
+
+function addRow(prefill=null){
+  tbody.appendChild(makeRow(prefill));
+  renumber();
+}
+
+function deleteLastRow(){
+  const last = tbody.lastElementChild;
+  if(last){
+    last.remove();
+    renumber();
+  }
+  if(tbody.children.length === 0){
+    addRow(); addRow(); addRow();
+    renumber();
+  }
+}
+
+/* =======================
+   8) AI 분석(행 단위)
+======================= */
+async function analyzeRow(tr){
+  const state = rowBusy.get(tr);
+  if(!state || state.busy) return;
+
+  const riskEl = tr.querySelector("[data-role=risk]");
+  const risk = riskEl.value.trim();
+  if(!risk) return;
+
+  if(state.lastRisk === risk) return;
+
+  const damageEl = tr.querySelector("[data-role=damage]");
+  const probEl   = tr.querySelector("[data-role=prob]");
+  const sevEl    = tr.querySelector("[data-role=sev]");
+  const solEl    = tr.querySelector("[data-role=solution]");
+
+  state.busy = true;
+  state.lastRisk = risk;
+
+  damageEl.value = "분석 중...";
+  probEl.value   = "분석 중...";
+  sevEl.value    = "분석 중...";
+  solEl.value    = "분석 중...";
+  renderScore(tr);
+
+  try{
+    const out = await callGemini(buildRiskPrompt(risk), FN_ANALYZE);
+    if(!out.includes("[피해형태]")) throw new Error("파싱 실패");
+
+    damageEl.value = extractSection(out, "[피해형태]", "[가능성]");
+    probEl.value   = extractSection(out, "[가능성]", "[중대성]");
+    sevEl.value    = extractSection(out, "[중대성]", "[개선대책]");
+    solEl.value    = extractSection(out, "[개선대책]", "");
+
+    probEl.value = (String(probEl.value).match(/[1-3]/) || [""])[0];
+    sevEl.value  = (String(sevEl.value).match(/[1-3]/) || [""])[0];
+
+    renderScore(tr);
+  }catch(e){
+    damageEl.value = "분석 실패";
+    probEl.value = "";
+    sevEl.value  = "";
+    solEl.value  = "";
+    renderScore(tr);
+    console.error(e);
+    toast("AI 분석 실패 (콘솔 확인)");
+  }finally{
+    state.busy = false;
+  }
+}
+
+/* =======================
+   9) 교육/지시사항 생성(종합)
+======================= */
+async function generateSummary(){
+  const rows = [...tbody.querySelectorAll("tr")];
+  let allRisks = "";
+  let allSolutions = "";
+
+  rows.forEach(tr=>{
+    const risk = tr.querySelector("[data-role=risk]").value.trim();
+    const sol  = tr.querySelector("[data-role=solution]").value.trim();
+    if(risk && risk !== "분석 중..." && risk !== "분석 실패"){
+      allRisks += `- ${risk}\n`;
+      if(sol && sol !== "분석 중..." && sol !== "분석 실패"){
+        allSolutions += `${sol}\n`;
+      }
+    }
+  });
+
+  if(!allRisks.trim()){
+    alert("위험요인이 입력되지 않았습니다.");
+    return;
+  }
+
+  btnGenerate.disabled = true;
+  btnGenerateTop.disabled = true;
+
+  edu1.value = edu2.value = edu3.value = "분석 중...";
+  boss.value = "분석 중...";
+  setSummaryState("분석 중", "busy");
+
+  try{
+    // ✅ generateEducation 함수가 있으면 그걸 쓰고, 없으면 analyzeRisk로 자동 fallback
+    const out = await callGemini(buildSummaryPrompt(allRisks, allSolutions), FN_EDU);
+    if(!out.includes("[교육내용1]")) throw new Error("파싱 실패");
+
+    edu1.value = extractSection(out, "[교육내용1]", "[교육내용2]");
+    edu2.value = extractSection(out, "[교육내용2]", "[교육내용3]");
+    edu3.value = extractSection(out, "[교육내용3]", "[현장소장지시사항]");
+    boss.value = extractSection(out, "[현장소장지시사항]", "");
+
+    setSummaryState("완료", "ok");
+    toast("교육/지시사항 생성 완료");
+  }catch(e){
+    edu1.value = "분석 실패";
+    edu2.value = "";
+    edu3.value = "";
+    boss.value = String(e?.message || e);
+    setSummaryState("오류", "err");
+    console.error(e);
+    toast("교육/지시사항 생성 실패");
+  }finally{
+    btnGenerate.disabled = false;
+    btnGenerateTop.disabled = false;
+  }
+}
+
+/* =======================
+   10) Firestore 저장/전회차
+   문서 ID: {site}__{round}
+======================= */
+function makeDocId(site, round, tradeLarge, tradeSmall){
+  const safe = (v)=>String(v||"").replace(/[\/\\#?[\]]/g, "_").trim();
+  return `${safe(site)}__${round}__${safe(tradeLarge)}__${safe(tradeSmall)}`;
+}
+
+function collectData(){
+  const meta = {
+    writer: writerEl.value || "",
+    meetingDate: meetingDateEl.value || "",
+    periodStart: periodStartEl.value || "",
+    periodEnd: periodEndEl.value || "",
+    tradeLarge: tradeLargeEl.value || "",
+    tradeSmall: tradeSmallEl.value || "",
+    workDays: Number(workDaysEl.value || 0),
+    manpower: manpowerEl.value || "",
+    equipments: equipmentsEl.value || "",
+    workerOpinion: workerOpinionEl?.value || "",
+  };
+
+  const risks = [...tbody.querySelectorAll("tr")].map(tr=>({
+    workName: tr.querySelector("[data-role=workName]").value || "",
+    workLoc:  tr.querySelector("[data-role=workLoc]").value || "",
+    risk:     tr.querySelector("[data-role=risk]").value || "",
+    damage:   tr.querySelector("[data-role=damage]").value || "",
+    prob:     Number(tr.querySelector("[data-role=prob]").value || 0),
+    sev:      Number(tr.querySelector("[data-role=sev]").value || 0),
+    solution: tr.querySelector("[data-role=solution]").value || "",
+    actor:    tr.querySelector("[data-role=actor]").value || "",
+    checker:  tr.querySelector("[data-role=checker]").value || ""
+  }));
+
+  const summary = {
+    edu1: edu1.value || "",
+    edu2: edu2.value || "",
+    edu3: edu3.value || "",
+    boss: boss.value || ""
+  };
+  const prevFeedback = [];
+document
+  .querySelectorAll("#prevFeedbackBody textarea[data-role=prevResult]")
+  .forEach((ta) => {
+    prevFeedback.push({
+      prevIndex: Number(ta.dataset.prevIndex || 0),
+      result: ta.value || ""
+    });
+  });
+
+  return {
+    site: siteEl.value,
+    round: Math.max(1, Number(roundEl.value || 1)),
+    meta,
+    risks,
+    summary,
+    prevFeedback
+  };
+}
+// =======================
+// ✅ 공종 마스터 누적 저장 (중복 방지)
+// =======================
+async function upsertTradeMaster(site, tradeLarge, tradeSmall){
+  const large = String(tradeLarge||"").trim();
+  const small = String(tradeSmall||"").trim();
+
+  if(!site || !large || !small) return;
+
+  try{
+    const ref = collection(db, "tradeMasters", site, "items");
+    const q = query(
+      ref,
+      where("tradeLarge","==",large),
+      where("tradeSmall","==",small)
+    );
+    const snap = await getDocs(q);
+
+    if(snap.empty){
+      await addDoc(ref, {
+        tradeLarge: large,
+        tradeSmall: small,
+        active: true,
+        createdAt: serverTimestamp()
+      });
+    }
+  }catch(e){
+    console.warn("upsertTradeMaster skipped:", e?.message || e);
+  }
+}
+
+async function saveToFirestore(){
+  const data = collectData();
+// ✅ 공종 마스터 자동 누적 저장
+await upsertTradeMaster(
+  data.site,
+  tradeLargeEl.value,
+  tradeSmallEl.value
+);
+await loadTradesFromFirestore();
+
+
+  // ✅ 저장 시 제목 강제 고정
+  const fixedTitle = makeTitleByRound(data.round);
+  roundTextEl.textContent = data.round;
+
+  const id = makeDocId(
+  data.site,
+  data.round,
+  tradeLargeEl.value,
+  tradeSmallEl.value
+);
+
+  const ref = doc(db, "riskAssessments", id);
+
+  btnSave.disabled = true;
+  try{
+    const existing = await getDoc(ref);
+    const payload = {
+      ...data,
+      title: fixedTitle,
+      updatedAt: serverTimestamp(),
+    };
+    if(!existing.exists()){
+      payload.createdAt = serverTimestamp();
+    }
+    await setDoc(ref, payload, { merge:true });
+    toast(`저장 완료: ${data.site} / ${data.round}회차`);
+  }catch(e){
+    console.error(e);
+    alert("저장 실패: " + String(e?.message || e));
+  }finally{
+    btnSave.disabled = false;
+  }
+}
+
+function fillMeta(meta){
+  writerEl.value = meta?.writer || "";
+  meetingDateEl.value = meta?.meetingDate || "";
+  periodStartEl.value = meta?.periodStart || "";
+  periodEndEl.value = meta?.periodEnd || "";
+  tradeLargeEl.value = meta?.tradeLarge || "";
+  tradeSmallEl.value = meta?.tradeSmall || "";
+  workDaysEl.value = (meta?.workDays ?? "");
+  manpowerEl.value = meta?.manpower || "";
+  equipmentsEl.value = meta?.equipments || "";
+  if(workerOpinionEl) workerOpinionEl.value = meta?.workerOpinion || "";
+}
+
+function fillRisks(risks){
+  tbody.innerHTML = "";
+  const arr = Array.isArray(risks) ? risks : [];
+  if(arr.length){
+    arr.forEach(r => addRow(r));
+  }else{
+    addRow(); addRow(); addRow();
+  }
+  renumber();
+  ckAll.checked = false;
+}
+
+function fillSummary(summary){
+  edu1.value = summary?.edu1 || "";
+  edu2.value = summary?.edu2 || "";
+  edu3.value = summary?.edu3 || "";
+  boss.value = summary?.boss || "";
+}
+
+let prevRoundCache = {}; // { 공종대분류: data }
+
+async function loadPreviousRound(){
+  const site = siteEl.value;
+  const round = Math.max(1, Number(roundEl.value || 1));
+
+  if(round <= 1){
+    toast("1회차는 전회차가 없습니다.");
+    return;
+  }
+
+  const prevRound = round - 1;
+  btnLoadPrev.disabled = true;
+
+  try{
+    const q = query(
+      collection(db, "riskAssessments"),
+      where("site", "==", site),
+      where("round", "==", prevRound)
+    );
+    const snap = await getDocs(q);
+
+    if(snap.empty){
+      toast(`전회차(${prevRound}회차) 저장 기록이 없습니다.`);
+      return;
+    }
+
+    prevRoundCache = {};
+    snap.forEach(docSnap=>{
+      const d = docSnap.data();
+      const large = (d?.meta?.tradeLarge || "").trim();
+      if(!large) return;
+      if(!prevRoundCache[large]){
+        prevRoundCache[large] = d;
+      }
+    });
+
+    const list = Object.keys(prevRoundCache);
+    if(!list.length){
+      toast("전회차 공종 정보 없음");
+      return;
+    }
+
+    prevTradeSelect.innerHTML = list
+      .sort((a,b)=>a.localeCompare(b,"ko"))
+      .map(v=>`<option value="${v}">${v}</option>`)
+      .join("");
+
+    prevTradeBox.style.display = "block";
+    toast("공종 선택");
+
+  }catch(e){
+    console.error(e);
+    alert("전회차 조회 실패: " + String(e?.message || e));
+  }finally{
+    btnLoadPrev.disabled = false;
+  }
+}
+function confirmLoadPrevByTrade(){
+  const tradeLarge = prevTradeSelect.value;
+  if(!tradeLarge || !prevRoundCache[tradeLarge]){
+    toast("공종을 선택하세요.");
+    return;
+  }
+
+  const ok = confirm(
+    `⚠ 전회차 내용을 불러옵니다.\n` +
+    `공종 대분류: ${tradeLarge}\n\n` +
+    `현재 입력 내용은 덮어씁니다.\n불러오시겠습니까?`
+  );
+  if(!ok) return;
+
+  const data = prevRoundCache[tradeLarge];
+
+  fillMeta(data.meta);
+  fillRisks(data.risks);
+  fillSummary(data.summary);
+    // ✅ 전회차 피드백 표(전회차 위험요인/개선대책 + 이행결과 입력칸) 채우기
+  prevFeedbackBody.innerHTML = "";
+
+  const prevRisks = Array.isArray(data.risks) ? data.risks : [];
+  if(!prevRisks.length){
+    prevFeedbackBody.innerHTML = `
+      <tr>
+        <td class="center" colspan="4" style="color:var(--muted);padding:14px;">
+          전회차 위험요인 데이터가 없습니다.
+        </td>
+      </tr>
+    `;
+  }else{
+    prevRisks.forEach((r, i) => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td class="center">${i+1}</td>
+        <td>${(r.risk || "").replaceAll("<","&lt;")}</td>
+        <td>${(r.solution || "").replaceAll("<","&lt;")}</td>
+        <td>
+          <textarea class="tTa adminInput" data-role="prevResult" data-prev-index="${i}"
+            placeholder="이행결과 작성"></textarea>
+        </td>
+      `;
+      prevFeedbackBody.appendChild(tr);
+    });
+  }
+
+
+  tradeLargeEl.value = tradeLarge;
+  roundTextEl.textContent = roundEl.value;
+
+  prevTradeBox.style.display = "none";
+  setSummaryState("대기", "idle");
+  toast("전회차 불러오기 완료");
+}
+
+
+/* =======================
+   11) 선택삭제/체크올
+======================= */
+function deleteSelected(){
+  const rows = [...tbody.querySelectorAll("tr")];
+  const targets = rows.filter(tr => tr.querySelector("[data-role=sel]").checked);
+  if(!targets.length){
+    alert("선택된 행이 없습니다.");
+    return;
+  }
+  targets.forEach(tr=>tr.remove());
+  ckAll.checked = false;
+  renumber();
+  if(tbody.children.length === 0){
+    addRow(); addRow(); addRow();
+    renumber();
+  }
+}
+
+ckAll.addEventListener("change", ()=>{
+  const on = ckAll.checked;
+  [...tbody.querySelectorAll("[data-role=sel]")].forEach(ck=>ck.checked = on);
+});
+
+/* =======================
+   12) 버튼 이벤트 (버전1 흐름 유지)
+======================= */
+btnAddRow.addEventListener("click", ()=> addRow());
+btnAddRowTop.addEventListener("click", ()=> addRow());
+
+// ===== 기본 정보 (버전1 밀도 유지) =====
+
+btnDeleteLast.addEventListener("click", deleteLastRow);
+
+btnDeleteLast.addEventListener("click", deleteLastRow);
+btnDeleteSelectedTop.addEventListener("click", deleteSelected);
+
+btnGenerate.addEventListener("click", generateSummary);
+btnGenerateTop.addEventListener("click", generateSummary);
+
+btnPrintTop.addEventListener("click", ()=> window.print());
+
+btnSave.addEventListener("click", saveToFirestore);
+btnLoadPrev.addEventListener("click", loadPreviousRound);
+btnConfirmPrevTrade.addEventListener("click", confirmLoadPrevByTrade);
+
+btnCancelPrevTrade.addEventListener("click", ()=>{
+  prevTradeBox.style.display = "none";
+  prevRoundCache = {};
+});
+
+/* 회차 변경 시: 제목만 즉시 동기화 (버전1 느낌 유지) */
+roundEl.addEventListener("change", ()=>{
+  syncRoundTitle();
+});
+
+/* =======================
+   13) 초기 3행 보장 (버전1 핵심)
+======================= */
+(function initRows(){
+  if(tbody.children.length === 0){
+    addRow(); addRow(); addRow();
+    renumber();
+  }
+  setSummaryState("대기", "idle");
+  toast("v1.0SR FINAL (Secure) 준비 완료");
+})();
+
+/* ===============================
+   🔥 PDF 출력 직전: textarea → printText 복사
+=============================== */
+window.addEventListener("beforeprint", () => {
+  document.querySelectorAll("tbody tr").forEach(tr => {
+    const risk = tr.querySelector("[data-role=risk]");
+    const sol  = tr.querySelector("[data-role=solution]");
+
+    const prRisk = tr.querySelector("[data-print=risk]");
+    const prSol  = tr.querySelector("[data-print=solution]");
+
+    if (risk && prRisk) prRisk.textContent = risk.value;
+    if (sol && prSol)   prSol.textContent  = sol.value;
+  });
+});
+
+
+
+</script>
+
+</body>
+</html>

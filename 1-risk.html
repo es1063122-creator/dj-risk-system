@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>최초 위험성평가 | 동진토건</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+<style>
+body{
+  margin:0;
+  font-family:"Noto Sans KR",sans-serif;
+  background:#f4f7ff;
+  color:#0b1b3b;
+}
+.header{
+  background:#0b2a4f;
+  color:#fff;
+  padding:60px 20px;
+  text-align:center;
+}
+.section{max-width:1400px;margin:0 auto;padding:30px}
+.box{
+  background:#fff;
+  border-radius:18px;
+  padding:24px;
+  margin-bottom:24px;
+  box-shadow:0 12px 30px rgba(0,0,0,.08)
+}
+h2{margin:0 0 16px;font-size:20px;font-weight:800}
+label{font-weight:700;font-size:14px}
+input,select{
+  width:100%;
+  padding:10px;
+  margin-top:6px;
+  border-radius:10px;
+  border:1px solid #ccc;
+}
+
+/* table */
+table{width:100%;border-collapse:collapse;font-size:12px}
+th,td{border:1px solid #bbb;padding:6px;text-align:center}
+th{background:#eef3ff}
+
+/* risk color */
+.risk-high{background:#fee2e2;color:#991b1b;font-weight:800}
+.risk-mid{background:#ffedd5;color:#9a3412;font-weight:800}
+.risk-low{background:#dbeafe;color:#1e40af;font-weight:800}
+
+/* buttons */
+.actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:10px;
+  margin-top:16px
+}
+button{
+  padding:12px 26px;
+  border-radius:999px;
+  border:none;
+  font-weight:800;
+  cursor:pointer
+}
+.primary{background:#1f5bd8;color:#fff}
+.ghost{background:#fff;border:1px solid #aaa}
+.danger{background:#ef4444;color:#fff}
+
+/* print */
+@media print{
+  body{background:#fff}
+  .no-print{display:none !important}
+  .page{page-break-after:always}
+}
+</style>
+</head>
+
+<body>
+
+<div class="header no-print">
+  <h1>최초 위험성평가</h1>
+</div>
+
+<div class="section no-print">
+
+<!-- 현장 정보 -->
+<div class="box">
+  <h2>① 현장 정보</h2>
+
+  <label>기등록 현장 선택</label>
+  <select id="siteSelect"><option value="">선택</option></select>
+
+  <label style="margin-top:10px">현장 ID (영문)</label>
+  <input id="siteId">
+
+  <label style="margin-top:10px">회사명</label>
+  <input id="companyName" placeholder="동진토건(주)">
+
+  <label style="margin-top:10px">현장명</label>
+  <input id="siteName">
+
+  <label style="margin-top:10px">공사명</label>
+  <input id="projectName">
+
+  <label style="margin-top:10px">공사기간</label>
+  <input id="projectPeriod" placeholder="착공일 ~ 준공일">
+
+  <label style="margin-top:10px">최초 위험성평가 실시일</label>
+  <input type="date" id="evalDate">
+
+  <div class="actions" style="justify-content:flex-start">
+    <button class="ghost" id="loadBtn">불러오기</button>
+  </div>
+</div>
+
+<!-- 엑셀 -->
+<div class="box">
+  <h2>② 엑셀 업로드</h2>
+
+  <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+    <input type="file" id="excelFile" accept=".xlsx,.xls">
+
+    <!-- 엑셀 양식 다운로드 -->
+    <a
+      href="https://github.com/es1063122-creator/dj-risk-system/raw/main/%EC%B5%9C%EC%B4%88.xlsx"
+      download
+      class="excel-download"
+    >
+      📥 엑셀 양식 다운로드
+    </a>
+  </div>
+</div>
+
+
+<!-- 위험성평가 -->
+<div class="box" id="tableBox" style="display:none">
+  <h2>③ 위험성평가 항목</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th><input type="checkbox" id="checkAll"></th>        
+        <th>NO</th>
+        <th>대공종명</th>
+        <th>중공종명</th>
+        <th>세부공종</th>
+        <th>작업내용</th>
+        <th>위험요인</th>
+        <th>위험분류</th>
+        <th>위험등급</th>
+        <th>위험감소대책</th>
+      </tr>
+    </thead>
+    <tbody id="tbody"></tbody>
+  </table>
+
+  <div class="actions">
+    <button class="danger" id="deleteSelected">선택삭제</button>
+    <button class="ghost" id="pdfBtn">PDF 저장</button>
+    <button class="primary" id="saveBtn">저장</button>
+    <button class="danger" id="deleteBtn">삭제</button>
+  </div>
+</div>
+
+</div>
+
+<!-- PDF -->
+<div id="pdfArea" style="display:none">
+
+<!-- 갑지 -->
+<div class="page">
+  <h1 style="text-align:center">최초 위험성평가 보고서</h1>
+  <hr>
+
+  <p><b>평가 구분 :</b> ☑ 최초 ☐ 정기 ☐ 수시</p>
+
+  <h3>1. 현장 기본 정보</h3>
+  <p>회사명 : <span id="p_company"></span></p>
+  <p>현장명 : <span id="p_site"></span></p>
+  <p>공사명 : <span id="p_project"></span></p>
+  <p>공사기간 : <span id="p_period"></span></p>
+  <p>위험성평가 실시일 : <span id="p_date"></span></p>
+
+  <h3>2. 참여자 명단</h3>
+  <table>
+    <tr><th>구분</th><th>성명</th><th>직위</th><th>서명</th></tr>
+    <tr><td>현장소장</td><td></td><td></td><td></td></tr>
+    <tr><td>관리감독자</td><td></td><td></td><td></td></tr>
+    <tr><td>안전관리자</td><td></td><td></td><td></td></tr>
+    <tr><td>근로자대표</td><td></td><td></td><td></td></tr>
+  </table>
+
+  <p style="margin-top:20px">
+    본 현장의 최초 위험성평가는 산업안전보건법에 따라 유해·위험요인을 도출하고
+    위험성 저감대책을 수립하여 근로자에게 충분히 전파하였음.
+  </p>
+
+  <!-- 서명 -->
+  <div style="margin-top:50px;text-align:right;font-weight:700">
+    작 성 <span style="display:inline-block;width:140px;border-bottom:1px solid #000;"></span>
+    &nbsp;&nbsp;
+    검 토 <span style="display:inline-block;width:140px;border-bottom:1px solid #000;"></span>
+    &nbsp;&nbsp;
+    승 인 <span style="display:inline-block;width:140px;border-bottom:1px solid #000;"></span>
+  </div>
+</div>
+
+<!-- 세부내역 -->
+<div class="page">
+  <h2>위험성평가 세부내역</h2>
+  <table>
+    <thead>
+      <tr>
+        <th> </th>
+        <th>NO</th>
+        <th>대공종명</th>
+        <th>중공종명</th>
+        <th>세부공종</th>
+        <th>작업내용</th>
+        <th>위험요인</th>
+        <th>위험분류</th>
+        <th>위험등급</th>
+        <th>위험감소대책</th>
+      </tr>
+    </thead>
+    <tbody id="pdfTable"></tbody>
+  </table>
+</div>
+
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import {
+  getFirestore, collection, getDocs,
+  doc, getDoc, setDoc, deleteDoc,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const app = initializeApp({
+  apiKey:"AIzaSyDO0z7h5WVsyHob7PAJLzOBFi8wCifAsdY",
+  projectId:"dongjin-risk-system"
+});
+const db = getFirestore(app);
+
+/* site list */
+const siteSelect=document.getElementById("siteSelect");
+async function loadSites(){
+  const snap=await getDocs(collection(db,"sites"));
+  snap.forEach(d=>{
+    const s=d.data();
+    if(!s.active)return;
+    const o=document.createElement("option");
+    o.value=s.siteId;
+    o.textContent=`${s.siteName} (${s.siteId})`;
+    siteSelect.appendChild(o);
+  });
+}
+loadSites();
+siteSelect.addEventListener("change",()=>siteId.value=siteSelect.value);
+
+/* excel */
+let items=[];
+excelFile.addEventListener("change",async e=>{
+  const buf=await e.target.files[0].arrayBuffer();
+  const wb=XLSX.read(buf,{type:"array"});
+  items=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:""});
+  render();
+});
+
+function render(){
+  tbody.innerHTML="";
+  items.forEach((r,i)=>{
+    const cls=r["위험등급"]==="상"?"risk-high":
+              r["위험등급"]==="중"?"risk-mid":"risk-low";
+    tbody.innerHTML+=`
+      <tr>
+        <td><input type="checkbox" class="rowCheck" data-i="${i}"></td>
+        <td>${r["NO"]||""}</td>
+        <td>${r["대공종명"]||""}</td>
+        <td>${r["중공종명"]||""}</td>
+        <td>${r["세부공종"]||""}</td>
+        <td>${r["작업내용"]||""}</td>
+        <td>${r["위험요인"]||""}</td>
+        <td>${r["위험분류"]||""}</td>
+        <td class="${cls}">${r["위험등급"]||""}</td>
+        <td>${r["위험감소대책"]||""}</td>
+      </tr>`;
+  });
+  tableBox.style.display="block";
+}
+
+/* check delete */
+checkAll.addEventListener("change",()=>{
+  document.querySelectorAll(".rowCheck").forEach(c=>c.checked=checkAll.checked);
+});
+deleteSelected.addEventListener("click",()=>{
+  items=items.filter((_,i)=>!document.querySelector(`.rowCheck[data-i="${i}"]`)?.checked);
+  render();
+});
+
+/* load */
+loadBtn.addEventListener("click",async ()=>{
+  const id=siteId.value.trim();
+  const snap=await getDoc(doc(db,"initialRiskAssessments",id));
+  if(!snap.exists()){alert("없음");return;}
+  const d=snap.data();
+  companyName.value=d.companyName||"";
+  siteName.value=d.siteName;
+  projectName.value=d.projectName||"";
+  projectPeriod.value=d.projectPeriod||"";
+  evalDate.value=d.evalDate;
+  items=d.items;
+  render();
+});
+
+/* save */
+saveBtn.addEventListener("click",async ()=>{
+  const id=siteId.value.trim();
+  if(!id||!siteName.value||!items.length){alert("필수값 누락");return;}
+
+  await setDoc(doc(db,"initialRiskAssessments",id),{
+    siteId:id,
+    companyName:companyName.value,
+    siteName:siteName.value,
+    projectName:projectName.value,
+    projectPeriod:projectPeriod.value,
+    evalDate:evalDate.value,
+    items,
+    updatedAt:serverTimestamp()
+  });
+
+  await setDoc(doc(db,"sites",id),{
+    siteId:id, siteName:siteName.value, active:true,
+    createdAt:serverTimestamp()
+  },{merge:true});
+
+  alert("저장 완료");
+});
+
+/* delete */
+deleteBtn.addEventListener("click",async ()=>{
+  if(!confirm("삭제?"))return;
+  await deleteDoc(doc(db,"initialRiskAssessments",siteId.value));
+  location.reload();
+});
+
+/* pdf */
+pdfBtn.addEventListener("click",()=>{
+  p_company.textContent=companyName.value;
+  p_site.textContent=siteName.value;
+  p_project.textContent=projectName.value;
+  p_period.textContent=projectPeriod.value;
+  p_date.textContent=evalDate.value;
+  pdfTable.innerHTML=tbody.innerHTML;
+  pdfArea.style.display="block";
+  window.print();
+  pdfArea.style.display="none";
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>정기 위험성평가 | 동진토건</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+<style>
+body{margin:0;font-family:"Noto Sans KR";background:#f4f7ff;color:#0b1b3b}
+.header{background:#0b2a4f;color:#fff;padding:60px 20px;text-align:center}
+.section{max-width:1400px;margin:0 auto;padding:30px}
+.box{background:#fff;border-radius:18px;padding:24px;margin-bottom:24px;box-shadow:0 12px 30px rgba(0,0,0,.08)}
+h2{margin:0 0 16px;font-size:20px;font-weight:800}
+label{font-weight:700;font-size:14px}
+input,select{width:100%;padding:10px;margin-top:6px;border-radius:10px;border:1px solid #ccc}
+
+table{width:100%;border-collapse:collapse;font-size:12px}
+th,td{border:1px solid #bbb;padding:6px;text-align:center}
+th{background:#eef3ff;white-space:nowrap}
+
+.risk-high{background:#fee2e2;color:#991b1b;font-weight:800}
+.risk-mid{background:#ffedd5;color:#9a3412;font-weight:800}
+.risk-low{background:#dbeafe;color:#1e40af;font-weight:800}
+
+.actions{display:flex;justify-content:flex-end;gap:10px;margin-top:16px}
+button{padding:12px 26px;border-radius:999px;border:none;font-weight:800;cursor:pointer}
+.primary{background:#1f5bd8;color:#fff}
+.ghost{background:#fff;border:1px solid #aaa}
+.danger{background:#ef4444;color:#fff}
+
+@media print{
+  body{background:#fff}
+  .no-print{display:none!important}
+  .page{page-break-after:always}
+}
+</style>
+</head>
+
+<body>
+
+<div class="header no-print">
+  <h1>정기 위험성평가</h1>
+</div>
+
+<div class="section no-print">
+
+<!-- ① 기본정보 -->
+<div class="box">
+  <h2>① 현장 및 평가 정보</h2>
+
+  <label>현장 선택</label>
+  <select id="siteSelect"><option value="">선택</option></select>
+
+  <label style="margin-top:10px">현장 ID</label>
+  <input id="siteId">
+
+  <label style="margin-top:10px">회사명</label>
+  <input id="companyName">
+
+  <label style="margin-top:10px">현장명</label>
+  <input id="siteName">
+
+  <label style="margin-top:10px">공사명</label>
+  <input id="projectName">
+
+  <label style="margin-top:10px">공사기간</label>
+  <input id="projectPeriod">
+
+  <label style="margin-top:10px">정기 위험성평가 회차</label>
+  <select id="roundSelect">
+    <option value="1">1차</option>
+    <option value="2">2차</option>
+    <option value="3">3차</option>
+    <option value="4">4차</option>
+    <option value="5">5차</option>
+  </select>
+
+  <label style="margin-top:10px">위험성평가 기간</label>
+  <div style="display:flex;gap:8px">
+    <input type="date" id="riskStart">
+    <input type="date" id="riskEnd">
+  </div>
+
+  <label style="margin-top:10px">위험성평가 실시일</label>
+  <input type="date" id="evalDate">
+
+  <div class="actions" style="justify-content:flex-start">
+    <button class="ghost" id="loadBtn">불러오기</button>
+  </div>
+</div>
+
+<!-- ② 엑셀 -->
+<div class="box">
+  <h2>② 엑셀 업로드</h2>
+  <input type="file" id="excelFile" accept=".xlsx,.xls">
+</div>
+
+<!-- ③ 항목 -->
+<div class="box" id="tableBox" style="display:none">
+  <h2>③ 위험성평가 항목</h2>
+
+  <table>
+    <colgroup>
+      <col style="width:36px">
+      <col style="width:60px">
+      <col style="width:80px">
+      <col style="width:80px">
+      <col style="width:90px">
+      <col style="width:120px">
+      <col style="width:140px">
+      <col style="width:110px">
+      <col style="width:60px">
+      <col>
+    </colgroup>
+    <thead>
+      <tr>
+        <th><input type="checkbox" id="checkAll"></th>
+        <th>NO</th>
+        <th>대공종명</th>
+        <th>중공종명</th>
+        <th>세부공종</th>
+        <th>작업내용</th>
+        <th>위험요인</th>
+        <th>위험분류</th>
+        <th>위험등급</th>
+        <th>위험감소대책</th>
+      </tr>
+    </thead>
+    <tbody id="tbody"></tbody>
+  </table>
+
+  <div class="actions">
+    <button class="danger" id="deleteSelected">선택삭제</button>
+    <button class="ghost" id="pdfBtn">PDF</button>
+    <button class="primary" id="saveBtn">저장</button>
+    <button class="danger" id="deleteBtn">삭제</button>
+  </div>
+</div>
+
+</div>
+
+<!-- PDF -->
+<div id="pdfArea" style="display:none">
+
+<div class="page">
+  <h1 style="text-align:center">정기 위험성평가 보고서</h1>
+  <hr>
+  <p><b>평가 구분 :</b> ☐ 최초 ☑ 정기 ☐ 수시</p>
+  <p>정기 위험성평가 회차 : 제 <span id="p_round"></span> 차</p>
+  <p>위험성평가 기간 : <span id="p_period"></span></p>
+  <p>위험성평가 실시일 : <span id="p_date"></span></p>
+
+  <p style="margin-top:20px">회사명 : <span id="p_company"></span></p>
+  <p>현장명 : <span id="p_site"></span></p>
+  <p>공사명 : <span id="p_project"></span></p>
+
+  <h3 style="margin-top:20px">참여자</h3>
+  <table>
+    <tr><th>구분</th><th>성명</th><th>직위</th><th>서명</th></tr>
+    <tr><td>현장소장</td><td></td><td></td><td></td></tr>
+    <tr><td>관리감독자</td><td></td><td></td><td></td></tr>
+    <tr><td>안전관리자</td><td></td><td></td><td></td></tr>
+    <tr><td>근로자대표</td><td></td><td></td><td></td></tr>
+  </table>
+
+  <div style="margin-top:50px;text-align:right;font-weight:700">
+    작 성 <span style="display:inline-block;width:140px;border-bottom:1px solid #000"></span>
+    &nbsp;&nbsp;
+    검 토 <span style="display:inline-block;width:140px;border-bottom:1px solid #000"></span>
+    &nbsp;&nbsp;
+    승 인 <span style="display:inline-block;width:140px;border-bottom:1px solid #000"></span>
+  </div>
+</div>
+
+<div class="page">
+  <h2>위험성평가 세부내역</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>NO</th><th>대공종명</th><th>중공종명</th><th>세부공종</th>
+        <th>작업내용</th><th>위험요인</th><th>위험분류</th>
+        <th>위험등급</th><th>위험감소대책</th>
+      </tr>
+    </thead>
+    <tbody id="pdfTable"></tbody>
+  </table>
+</div>
+
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import {
+  getFirestore, collection, getDocs,
+  doc, getDoc, setDoc, deleteDoc,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const app=initializeApp({apiKey:"AIzaSyDO0z7h5WVsyHob7PAJLzOBFi8wCifAsdY",projectId:"dongjin-risk-system"});
+const db=getFirestore(app);
+
+/* site list */
+const siteSelect=document.getElementById("siteSelect");
+const siteId=document.getElementById("siteId");
+async function loadSites(){
+  const snap=await getDocs(collection(db,"sites"));
+  snap.forEach(d=>{
+    const s=d.data();
+    if(!s.active)return;
+    const o=document.createElement("option");
+    o.value=s.siteId;
+    o.textContent=`${s.siteName} (${s.siteId})`;
+    siteSelect.appendChild(o);
+  });
+}
+loadSites();
+siteSelect.addEventListener("change",()=>siteId.value=siteSelect.value);
+
+/* excel */
+let items=[];
+excelFile.addEventListener("change",async e=>{
+  const buf=await e.target.files[0].arrayBuffer();
+  const wb=XLSX.read(buf,{type:"array"});
+  items=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:""});
+  render();
+});
+
+function render(){
+  tbody.innerHTML="";
+  items.forEach((r,i)=>{
+    const cls=r["위험등급"]==="상"?"risk-high":
+              r["위험등급"]==="중"?"risk-mid":"risk-low";
+    tbody.innerHTML+=`
+      <tr>
+        <td><input type="checkbox" class="rowCheck" data-i="${i}"></td>
+        <td>${r["NO"]||""}</td>
+        <td>${r["대공종명"]||""}</td>
+        <td>${r["중공종명"]||""}</td>
+        <td>${r["세부공종"]||""}</td>
+        <td>${r["작업내용"]||""}</td>
+        <td>${r["위험요인"]||""}</td>
+        <td>${r["위험분류"]||""}</td>
+        <td class="${cls}">${r["위험등급"]||""}</td>
+        <td>${r["위험감소대책"]||""}</td>
+      </tr>`;
+  });
+  tableBox.style.display="block";
+}
+
+checkAll.addEventListener("change",()=>document.querySelectorAll(".rowCheck").forEach(c=>c.checked=checkAll.checked));
+deleteSelected.addEventListener("click",()=>{items=items.filter((_,i)=>!document.querySelector(`.rowCheck[data-i="${i}"]`)?.checked);render();});
+
+/* load */
+loadBtn.addEventListener("click",async ()=>{
+  const id=siteId.value.trim();
+  const round=roundSelect.value;
+  const snap=await getDoc(doc(db,"regularRiskAssessments",id,`round_${round}`));
+  if(!snap.exists()){alert("데이터 없음");return;}
+  const d=snap.data();
+  companyName.value=d.companyName;
+  siteName.value=d.siteName;
+  projectName.value=d.projectName;
+  projectPeriod.value=d.projectPeriod;
+  riskStart.value=d.riskPeriodStart;
+  riskEnd.value=d.riskPeriodEnd;
+  evalDate.value=d.evalDate;
+  items=d.items;
+  render();
+});
+
+/* save */
+saveBtn.addEventListener("click",async ()=>{
+  const id=siteId.value.trim();
+  const round=roundSelect.value;
+  if(!id||!items.length){alert("필수값 누락");return;}
+
+  await setDoc(doc(db,"regularRiskAssessments",id,`round_${round}`),{
+    siteId:id,
+    round:Number(round),
+    companyName:companyName.value,
+    siteName:siteName.value,
+    projectName:projectName.value,
+    projectPeriod:projectPeriod.value,
+    riskPeriodStart:riskStart.value,
+    riskPeriodEnd:riskEnd.value,
+    evalDate:evalDate.value,
+    items,
+    updatedAt:serverTimestamp()
+  });
+
+  alert("저장 완료");
+});
+
+/* delete */
+deleteBtn.addEventListener("click",async ()=>{
+  if(!confirm("해당 회차 삭제?"))return;
+  await deleteDoc(doc(db,"regularRiskAssessments",siteId.value,`round_${roundSelect.value}`));
+  location.reload();
+});
+
+/* pdf */
+pdfBtn.addEventListener("click",()=>{
+  p_round.textContent=roundSelect.value;
+  p_period.textContent=`${riskStart.value} ~ ${riskEnd.value}`;
+  p_date.textContent=evalDate.value;
+  p_company.textContent=companyName.value;
+  p_site.textContent=siteName.value;
+  p_project.textContent=projectName.value;
+
+  pdfTable.innerHTML="";
+  items.forEach(r=>{
+    const cls=r["위험등급"]==="상"?"risk-high":
+              r["위험등급"]==="중"?"risk-mid":"risk-low";
+    pdfTable.innerHTML+=`
+      <tr>
+        <td>${r["NO"]||""}</td>
+        <td>${r["대공종명"]||""}</td>
+        <td>${r["중공종명"]||""}</td>
+        <td>${r["세부공종"]||""}</td>
+        <td>${r["작업내용"]||""}</td>
+        <td>${r["위험요인"]||""}</td>
+        <td>${r["위험분류"]||""}</td>
+        <td class="${cls}">${r["위험등급"]||""}</td>
+        <td>${r["위험감소대책"]||""}</td>
+      </tr>`;
+  });
+
+  pdfArea.style.display="block";
+  window.print();
+  pdfArea.style.display="none";
+});
+</script>
+
+</body>
+</html>
