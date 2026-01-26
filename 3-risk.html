@@ -435,14 +435,6 @@ th:nth-child(12){ min-width:60px; }
       min-height:36px;
     }
 
-    td:nth-child(5) textarea,
-    td:nth-child(10) textarea{
-      overflow:visible !important;
-      height:auto !important;
-      max-height:none !important;
-      white-space:pre-wrap !important;
-      word-break:break-word !important;
-    }
 
     tr, td{
       page-break-inside:auto !important;
@@ -483,20 +475,6 @@ th:nth-child(12){ min-width:60px; }
      🔥 textarea를 "출력용 텍스트"로 강제 변환
      =============================== */
 
-  /* 위험요인 + 개선대책 textarea */
-  td textarea{
-    overflow: visible !important;
-    height: auto !important;
-    min-height: 0 !important;
-    max-height: none !important;
-
-    resize: none !important;
-    white-space: pre-wrap !important;
-    word-break: break-word !important;
-
-    display: block !important;
-  }
-
   /* 기존 화면용 최소 높이 완전 무력화 */
   .tTa{
     min-height: 0 !important;
@@ -525,26 +503,33 @@ th:nth-child(12){ min-width:60px; }
 /* 인쇄(PDF)에서만 표시 */
 @media print{
 
-  /* 입력용 textarea는 출력 금지 */
+  /* 🔴 입력용 textarea 완전 제거 */
   textarea{
     display:none !important;
   }
 
-  /* 출력용 텍스트만 표시 */
+  /* 🟢 출력용 텍스트만 표시 */
   .printText{
     display:block !important;
     white-space:pre-wrap;
     word-break:break-word;
     font-size:10.5px;
-    line-height:1.3;
+    line-height:1.35;
+    color:#000;
   }
 
-  /* 행 분할 허용 */
+  /* 셀 높이 자동 확장 */
+  td{
+    height:auto !important;
+    vertical-align:top !important;
+  }
+
   tr{
     page-break-inside:auto !important;
     break-inside:auto !important;
   }
 }
+
 
 /* =========================
    ✅ 입력 구분 색상
@@ -610,7 +595,7 @@ th:nth-child(12){ min-width:60px; }
         <button class="btn primary" id="btnGenerateTop" type="button">교육/지시사항 생성</button>
         <button class="btn" id="btnPrintTop" type="button">PDF/인쇄</button>
 
-        <button class="btn" id="btnLoadPrev" type="button">전회차 불러오기</button>
+        <button class="btn" id="btnLoadPrev" type="button">회차 불러오기</button>
         <button class="btn primary" id="btnSave" type="button">저장</button>
       </div>
 
@@ -625,24 +610,37 @@ th:nth-child(12){ min-width:60px; }
 
   <!-- ===== 기본 정보 (버전1 밀도 유지) ===== -->
   <div class="card">
-    <!-- ===== 전회차 공종 대분류 선택 ===== -->
-<div class="card" id="prevTradeBox" style="display:none;">
+<!-- ===== 회차 / 공종 선택 (전회차 불러오기) ===== -->
+<div class="card" id="prevLoadBox" style="display:none;">
   <div class="sectionTitle">
     <div>
-      <div class="t">전회차 공종 선택</div>
-      <div class="desc">전회차에 저장된 공종 대분류를 선택하세요.</div>
+      <div class="t">회차 및 공종 선택</div>
+      <div class="desc">불러올 회차를 선택한 후 공종을 선택하세요.</div>
     </div>
   </div>
 
   <div class="grid">
-    <div class="field" style="grid-column: span 4;">
+    <!-- 회차 선택 -->
+    <div class="field" style="grid-column: span 3;">
+      <div class="label">회차 선택</div>
+      <select id="prevRoundSelect"></select>
+    </div>
+
+    <div class="field" style="grid-column: span 3; display:flex; align-items:flex-end;">
+      <button class="btn primary" id="btnConfirmPrevRound" type="button">
+        회차 선택
+      </button>
+    </div>
+
+    <!-- 공종 선택 (회차 선택 후 표시) -->
+    <div class="field" id="prevTradeField" style="grid-column: span 4; display:none;">
       <div class="label">공종 대분류</div>
       <select id="prevTradeSelect"></select>
     </div>
 
-    <div class="field" style="grid-column: span 8; display:flex; align-items:flex-end;">
+    <div class="field" id="prevTradeBtns" style="grid-column: span 5; display:none; align-items:flex-end;">
       <button class="btn primary" id="btnConfirmPrevTrade" type="button">
-        선택한 공종 불러오기
+        불러오기
       </button>
       <button class="btn" id="btnCancelPrevTrade" type="button" style="margin-left:8px;">
         취소
@@ -650,6 +648,7 @@ th:nth-child(12){ min-width:60px; }
     </div>
   </div>
 </div>
+
 
     <div class="grid">
       <div class="field" style="grid-column: span 3;">
@@ -950,6 +949,12 @@ const prevTradeBox = $("prevTradeBox");
 const prevTradeSelect = $("prevTradeSelect");
 const btnConfirmPrevTrade = $("btnConfirmPrevTrade");
 const btnCancelPrevTrade = $("btnCancelPrevTrade");
+const prevLoadBox = $("prevLoadBox");
+const prevRoundSelect = $("prevRoundSelect");
+const btnConfirmPrevRound = $("btnConfirmPrevRound");
+
+const prevTradeField = $("prevTradeField");
+const prevTradeBtns  = $("prevTradeBtns");
 
 
 /* =======================
@@ -1642,87 +1647,119 @@ function fillSummary(summary){
   boss.value = summary?.boss || "";
 }
 
-let prevRoundCache = {}; // { 공종대분류: data }
+
+let prevRoundData = {}; // { round: [docs...] }
 
 async function loadPreviousRound(){
   const site = siteEl.value;
-  const round = Math.max(1, Number(roundEl.value || 1));
-
-  if(round <= 1){
-    toast("1회차는 전회차가 없습니다.");
-    return;
-  }
-
-  const prevRound = round - 1;
   btnLoadPrev.disabled = true;
 
   try{
     const q = query(
       collection(db, "riskAssessments"),
-      where("site", "==", site),
-      where("round", "==", prevRound)
+      where("site","==",site)
     );
     const snap = await getDocs(q);
 
     if(snap.empty){
-      toast(`전회차(${prevRound}회차) 저장 기록이 없습니다.`);
+      toast("저장된 회차가 없습니다.");
       return;
     }
 
-    prevRoundCache = {};
-    snap.forEach(docSnap=>{
-      const d = docSnap.data();
-      const large = (d?.meta?.tradeLarge || "").trim();
-      if(!large) return;
-      if(!prevRoundCache[large]){
-        prevRoundCache[large] = d;
-      }
+    prevRoundData = {};
+    snap.forEach(d=>{
+      const data = d.data();
+      const r = data.round;
+      if(!prevRoundData[r]) prevRoundData[r] = [];
+      prevRoundData[r].push(data);
     });
 
-    const list = Object.keys(prevRoundCache);
-    if(!list.length){
-      toast("전회차 공종 정보 없음");
-      return;
-    }
+    const rounds = Object.keys(prevRoundData)
+      .map(n=>Number(n))
+      .sort((a,b)=>b-a);
 
-    prevTradeSelect.innerHTML = list
-      .sort((a,b)=>a.localeCompare(b,"ko"))
-      .map(v=>`<option value="${v}">${v}</option>`)
+    prevRoundSelect.innerHTML = rounds
+      .map(r=>`<option value="${r}">${r}회차</option>`)
       .join("");
 
-    prevTradeBox.style.display = "block";
-    toast("공종 선택");
+    prevLoadBox.style.display = "block";
+    prevTradeField.style.display = "none";
+    prevTradeBtns.style.display  = "none";
+
+    toast("회차를 선택하세요");
 
   }catch(e){
     console.error(e);
-    alert("전회차 조회 실패: " + String(e?.message || e));
+    alert("회차 불러오기 실패");
   }finally{
     btnLoadPrev.disabled = false;
   }
 }
+
+// 🔹 회차 선택 → 공종 대분류 목록 생성
+btnConfirmPrevRound.addEventListener("click", () => {
+  const round = Number(prevRoundSelect.value);
+  const list = prevRoundData[round] || [];
+
+  if (!list.length) {
+    toast("해당 회차 데이터가 없습니다.");
+    return;
+  }
+
+  // 🔹 해당 회차에 존재하는 공종 대분류만 추출
+  const tradeSet = new Set();
+  list.forEach(d => {
+    if (d?.meta?.tradeLarge) {
+      tradeSet.add(d.meta.tradeLarge);
+    }
+  });
+
+  if (!tradeSet.size) {
+    toast("해당 회차에 공종 정보가 없습니다.");
+    return;
+  }
+
+  // 🔹 공종 셀렉트 채우기
+  prevTradeSelect.innerHTML = [...tradeSet]
+    .sort((a, b) => a.localeCompare(b, "ko"))
+    .map(t => `<option value="${t}">${t}</option>`)
+    .join("");
+
+  // 🔹 공종 선택 UI 표시
+  prevTradeField.style.display = "block";
+  prevTradeBtns.style.display  = "flex";
+
+  toast("공종을 선택하세요");
+});
+
 function confirmLoadPrevByTrade(){
+  const round = Number(prevRoundSelect.value);
   const tradeLarge = prevTradeSelect.value;
-  if(!tradeLarge || !prevRoundCache[tradeLarge]){
-    toast("공종을 선택하세요.");
+
+  const list = prevRoundData[round] || [];
+  const data = list.find(d => d?.meta?.tradeLarge === tradeLarge);
+
+  if(!data){
+    toast("선택한 데이터가 없습니다.");
     return;
   }
 
   const ok = confirm(
-    `⚠ 전회차 내용을 불러옵니다.\n` +
-    `공종 대분류: ${tradeLarge}\n\n` +
+    `⚠ 선택한 회차 내용을 불러옵니다.\n` +
+    `회차: ${round}회차\n` +
+    `공종: ${tradeLarge}\n\n` +
     `현재 입력 내용은 덮어씁니다.\n불러오시겠습니까?`
   );
   if(!ok) return;
 
-  const data = prevRoundCache[tradeLarge];
-
   fillMeta(data.meta);
   fillRisks(data.risks);
   fillSummary(data.summary);
-    // ✅ 전회차 피드백 표(전회차 위험요인/개선대책 + 이행결과 입력칸) 채우기
-  prevFeedbackBody.innerHTML = "";
 
+  // 🔹 전회차 피드백
+  prevFeedbackBody.innerHTML = "";
   const prevRisks = Array.isArray(data.risks) ? data.risks : [];
+
   if(!prevRisks.length){
     prevFeedbackBody.innerHTML = `
       <tr>
@@ -1739,7 +1776,9 @@ function confirmLoadPrevByTrade(){
         <td>${(r.risk || "").replaceAll("<","&lt;")}</td>
         <td>${(r.solution || "").replaceAll("<","&lt;")}</td>
         <td>
-          <textarea class="tTa adminInput" data-role="prevResult" data-prev-index="${i}"
+          <textarea class="tTa adminInput"
+            data-role="prevResult"
+            data-prev-index="${i}"
             placeholder="이행결과 작성"></textarea>
         </td>
       `;
@@ -1747,14 +1786,14 @@ function confirmLoadPrevByTrade(){
     });
   }
 
-
   tradeLargeEl.value = tradeLarge;
-  roundTextEl.textContent = roundEl.value;
+  roundTextEl.textContent = round;
 
-  prevTradeBox.style.display = "none";
-  setSummaryState("대기", "idle");
-  toast("전회차 불러오기 완료");
+  prevLoadBox.style.display = "none";
+  setSummaryState("대기","idle");
+  toast("회차 불러오기 완료");
 }
+
 
 
 /* =======================
@@ -1804,8 +1843,8 @@ btnLoadPrev.addEventListener("click", loadPreviousRound);
 btnConfirmPrevTrade.addEventListener("click", confirmLoadPrevByTrade);
 
 btnCancelPrevTrade.addEventListener("click", ()=>{
-  prevTradeBox.style.display = "none";
-  prevRoundCache = {};
+  prevLoadBox.style.display = "none";
+  prevRoundData = {};
 });
 
 /* 회차 변경 시: 제목만 즉시 동기화 (버전1 느낌 유지) */
