@@ -10,31 +10,40 @@
 
 <style>
 body{margin:0;font-family:"Noto Sans KR";background:#f4f7ff;color:#0b1b3b}
-.header{background:#0b2a4f;color:#fff;padding:60px 20px;text-align:center}
+.header{background:#0b2a4f;color:#fff;padding:50px 20px;text-align:center}
 .section{max-width:1400px;margin:0 auto;padding:30px}
-.box{background:#fff;border-radius:18px;padding:24px;margin-bottom:24px;box-shadow:0 12px 30px rgba(0,0,0,.08)}
-h2{margin:0 0 16px;font-size:20px;font-weight:800}
+.box{background:#fff;border-radius:16px;padding:22px;margin-bottom:20px;box-shadow:0 10px 25px rgba(0,0,0,.08)}
+h2{margin:0 0 14px;font-size:20px;font-weight:800}
 label{font-weight:700;font-size:14px}
 input,select{width:100%;padding:10px;margin-top:6px;border-radius:10px;border:1px solid #ccc}
 
-table{width:100%;border-collapse:collapse;font-size:12px}
-th,td{border:1px solid #bbb;padding:6px;text-align:center}
-th{background:#eef3ff;white-space:nowrap}
+table{width:100%;border-collapse:collapse;font-size:12px;margin-top:10px}
+th,td{border:1px solid #000;padding:6px;text-align:center}
+th{background:#eef3ff}
 
-.risk-high{background:#fee2e2;color:#991b1b;font-weight:800}
-.risk-mid{background:#ffedd5;color:#9a3412;font-weight:800}
-.risk-low{background:#dbeafe;color:#1e40af;font-weight:800}
-
-.actions{display:flex;justify-content:flex-end;gap:10px;margin-top:16px}
-button{padding:12px 26px;border-radius:999px;border:none;font-weight:800;cursor:pointer}
+.actions{display:flex;gap:10px;margin-top:14px;justify-content:flex-end}
+button{padding:10px 24px;border-radius:999px;border:none;font-weight:800;cursor:pointer}
 .primary{background:#1f5bd8;color:#fff}
 .ghost{background:#fff;border:1px solid #aaa}
 .danger{background:#ef4444;color:#fff}
 
+/* ===== PDF ===== */
 @media print{
   body{background:#fff}
   .no-print{display:none!important}
   .page{page-break-after:always}
+}
+.sign-wrap{
+  display:flex;
+  justify-content:flex-end;
+  gap:50px;
+  margin-top:40px;
+  font-weight:700;
+}
+.sign-line{
+  display:inline-block;
+  width:140px;
+  border-bottom:1.5px solid #000;
 }
 </style>
 </head>
@@ -47,27 +56,20 @@ button{padding:12px 26px;border-radius:999px;border:none;font-weight:800;cursor:
 
 <div class="section no-print">
 
-<!-- ① 기본정보 -->
+<!-- ① 현장 정보 -->
 <div class="box">
-  <h2>① 현장 및 평가 정보</h2>
+  <h2>① 현장 정보</h2>
 
-  <label>현장 선택</label>
-  <select id="siteSelect"><option value="">선택</option></select>
+  <label>회사명</label>
+  <input id="companyName" placeholder="예: 동진토건(주)">
+
+  <label style="margin-top:10px">현장 선택</label>
+  <select id="siteSelect">
+    <option value="">선택</option>
+  </select>
 
   <label style="margin-top:10px">현장 ID</label>
-  <input id="siteId">
-
-  <label style="margin-top:10px">회사명</label>
-  <input id="companyName">
-
-  <label style="margin-top:10px">현장명</label>
-  <input id="siteName">
-
-  <label style="margin-top:10px">공사명</label>
-  <input id="projectName">
-
-  <label style="margin-top:10px">공사기간</label>
-  <input id="projectPeriod">
+  <input id="siteId" readonly>
 
   <label style="margin-top:10px">정기 위험성평가 회차</label>
   <select id="roundSelect">
@@ -75,14 +77,7 @@ button{padding:12px 26px;border-radius:999px;border:none;font-weight:800;cursor:
     <option value="2">2차</option>
     <option value="3">3차</option>
     <option value="4">4차</option>
-    <option value="5">5차</option>
   </select>
-
-  <label style="margin-top:10px">위험성평가 기간</label>
-  <div style="display:flex;gap:8px">
-    <input type="date" id="riskStart">
-    <input type="date" id="riskEnd">
-  </div>
 
   <label style="margin-top:10px">위험성평가 실시일</label>
   <input type="date" id="evalDate">
@@ -98,33 +93,16 @@ button{padding:12px 26px;border-radius:999px;border:none;font-weight:800;cursor:
   <input type="file" id="excelFile" accept=".xlsx,.xls">
 </div>
 
-<!-- ③ 항목 -->
+<!-- ③ 평가 항목 -->
 <div class="box" id="tableBox" style="display:none">
-  <h2>③ 위험성평가 항목</h2>
+  <h2>③ 위험성평가 세부 항목</h2>
 
   <table>
-    <colgroup>
-      <col style="width:36px">
-      <col style="width:60px">
-      <col style="width:80px">
-      <col style="width:80px">
-      <col style="width:90px">
-      <col style="width:120px">
-      <col style="width:140px">
-      <col style="width:110px">
-      <col style="width:60px">
-      <col>
-    </colgroup>
     <thead>
       <tr>
-        <th><input type="checkbox" id="checkAll"></th>
         <th>NO</th>
-        <th>대공종명</th>
-        <th>중공종명</th>
-        <th>세부공종</th>
         <th>작업내용</th>
         <th>위험요인</th>
-        <th>위험분류</th>
         <th>위험등급</th>
         <th>위험감소대책</th>
       </tr>
@@ -133,198 +111,206 @@ button{padding:12px 26px;border-radius:999px;border:none;font-weight:800;cursor:
   </table>
 
   <div class="actions">
-    <button class="danger" id="deleteSelected">선택삭제</button>
-    <button class="ghost" id="pdfBtn">PDF</button>
     <button class="primary" id="saveBtn">저장</button>
-    <button class="danger" id="deleteBtn">삭제</button>
+    <button class="ghost" id="pdfBtn">PDF 보고서 출력</button>
   </div>
 </div>
 
 </div>
 
-<!-- PDF -->
+<!-- ================= PDF 영역 ================= -->
 <div id="pdfArea" style="display:none">
+  <div class="page">
 
-<div class="page">
-  <h1 style="text-align:center">정기 위험성평가 보고서</h1>
-  <hr>
-  <p><b>평가 구분 :</b> ☐ 최초 ☑ 정기 ☐ 수시</p>
-  <p>정기 위험성평가 회차 : 제 <span id="p_round"></span> 차</p>
-  <p>위험성평가 기간 : <span id="p_period"></span></p>
-  <p>위험성평가 실시일 : <span id="p_date"></span></p>
+    <h1 style="text-align:center;">위험성평가 보고서</h1>
 
-  <p style="margin-top:20px">회사명 : <span id="p_company"></span></p>
-  <p>현장명 : <span id="p_site"></span></p>
-  <p>공사명 : <span id="p_project"></span></p>
+    <p style="font-weight:700;">
+      평가 구분 :
+      ☐ 최초 &nbsp;&nbsp; ☑ 정기 &nbsp;&nbsp; ☐ 수시
+    </p>
 
-  <h3 style="margin-top:20px">참여자</h3>
-  <table>
-    <tr><th>구분</th><th>성명</th><th>직위</th><th>서명</th></tr>
-    <tr><td>현장소장</td><td></td><td></td><td></td></tr>
-    <tr><td>관리감독자</td><td></td><td></td><td></td></tr>
-    <tr><td>안전관리자</td><td></td><td></td><td></td></tr>
-    <tr><td>근로자대표</td><td></td><td></td><td></td></tr>
-  </table>
-
-  <div style="margin-top:50px;text-align:right;font-weight:700">
-    작 성 <span style="display:inline-block;width:140px;border-bottom:1px solid #000"></span>
-    &nbsp;&nbsp;
-    검 토 <span style="display:inline-block;width:140px;border-bottom:1px solid #000"></span>
-    &nbsp;&nbsp;
-    승 인 <span style="display:inline-block;width:140px;border-bottom:1px solid #000"></span>
-  </div>
-</div>
-
-<div class="page">
-  <h2>위험성평가 세부내역</h2>
-  <table>
-    <thead>
+    <h3>1. 현장 기본 정보</h3>
+    <table>
       <tr>
-        <th>NO</th><th>대공종명</th><th>중공종명</th><th>세부공종</th>
-        <th>작업내용</th><th>위험요인</th><th>위험분류</th>
-        <th>위험등급</th><th>위험감소대책</th>
+        <td style="font-weight:700;width:20%;">회사명</td>
+        <td id="p_company"></td>
+        <td style="font-weight:700;width:20%;">현장명</td>
+        <td id="p_site"></td>
       </tr>
-    </thead>
-    <tbody id="pdfTable"></tbody>
-  </table>
-</div>
+      <tr>
+        <td style="font-weight:700;">정기 위험성평가 회차</td>
+        <td colspan="3">제 <span id="p_round"></span> 차</td>
+      </tr>
+      <tr>
+        <td style="font-weight:700;">위험성평가 실시일</td>
+        <td colspan="3" id="p_evalDate"></td>
+      </tr>
+    </table>
 
+    <h3 style="margin-top:20px;">2. 참여자 명단</h3>
+    <table>
+      <tr>
+        <th>구분</th><th>성명</th><th>직위</th><th>서명</th>
+      </tr>
+      <tr><td>현장소장</td><td></td><td></td><td></td></tr>
+      <tr><td>관리감독자</td><td></td><td></td><td></td></tr>
+      <tr><td>안전관리자</td><td></td><td></td><td></td></tr>
+      <tr><td>근로자대표</td><td></td><td></td><td></td></tr>
+    </table>
+
+    <h3 style="margin-top:20px;">3. 위험성평가 세부 내용</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>NO</th>
+          <th>작업내용</th>
+          <th>위험요인</th>
+          <th>위험등급</th>
+          <th>위험감소대책</th>
+        </tr>
+      </thead>
+      <tbody id="pdfTable"></tbody>
+    </table>
+
+    <p style="margin-top:20px;line-height:1.6;">
+      본 현장의 정기 위험성평가는 산업안전보건법에 따라
+      유해·위험요인을 도출하고 위험성 저감대책을 수립하여
+      근로자에게 충분히 전파하였음.
+    </p>
+
+    <div class="sign-wrap">
+      <div>작 성 <span class="sign-line"></span></div>
+      <div>검 토 <span class="sign-line"></span></div>
+      <div>승 인 <span class="sign-line"></span></div>
+    </div>
+
+  </div>
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import {
   getFirestore, collection, getDocs,
-  doc, getDoc, setDoc, deleteDoc,
-  serverTimestamp
+  doc, getDoc, setDoc, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-const app=initializeApp({apiKey:"AIzaSyDO0z7h5WVsyHob7PAJLzOBFi8wCifAsdY",projectId:"dongjin-risk-system"});
-const db=getFirestore(app);
+/* Firebase */
+const app = initializeApp({
+  apiKey: "AIzaSyDO0z7h5WVsyHob7PAJLzOBFi8wCifAsdY",
+  projectId: "dongjin-risk-system"
+});
+const db = getFirestore(app);
 
-/* site list */
-const siteSelect=document.getElementById("siteSelect");
-const siteId=document.getElementById("siteId");
-async function loadSites(){
-  const snap=await getDocs(collection(db,"sites"));
+/* DOM */
+const companyName = document.getElementById("companyName");
+const siteSelect = document.getElementById("siteSelect");
+const siteId = document.getElementById("siteId");
+const roundSelect = document.getElementById("roundSelect");
+const evalDate = document.getElementById("evalDate");
+const excelFile = document.getElementById("excelFile");
+const tbody = document.getElementById("tbody");
+const tableBox = document.getElementById("tableBox");
+const saveBtn = document.getElementById("saveBtn");
+const loadBtn = document.getElementById("loadBtn");
+const pdfBtn = document.getElementById("pdfBtn");
+
+/* PDF DOM */
+const pdfArea = document.getElementById("pdfArea");
+const pdfTable = document.getElementById("pdfTable");
+const p_company = document.getElementById("p_company");
+const p_site = document.getElementById("p_site");
+const p_round = document.getElementById("p_round");
+const p_evalDate = document.getElementById("p_evalDate");
+
+/* Firestore ref */
+const roundRef = (siteId, round) =>
+  doc(db, "regularRiskAssessments", siteId, "rounds", `round_${round}`);
+
+/* 현장 목록 (active=true) */
+(async ()=>{
+  const snap = await getDocs(collection(db,"sites"));
   snap.forEach(d=>{
     const s=d.data();
-    if(!s.active)return;
+    if(s.active!==true) return;
     const o=document.createElement("option");
     o.value=s.siteId;
     o.textContent=`${s.siteName} (${s.siteId})`;
     siteSelect.appendChild(o);
   });
-}
-loadSites();
-siteSelect.addEventListener("change",()=>siteId.value=siteSelect.value);
+})();
 
-/* excel */
+siteSelect.addEventListener("change",()=>{
+  siteId.value = siteSelect.value;
+});
+
+/* Excel */
 let items=[];
 excelFile.addEventListener("change",async e=>{
-  const buf=await e.target.files[0].arrayBuffer();
-  const wb=XLSX.read(buf,{type:"array"});
-  items=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:""});
+  const buf = await e.target.files[0].arrayBuffer();
+  const wb = XLSX.read(buf,{type:"array"});
+  items = XLSX.utils.sheet_to_json(
+    wb.Sheets[wb.SheetNames[0]],
+    { defval:"" }
+  );
   render();
 });
 
 function render(){
   tbody.innerHTML="";
-  items.forEach((r,i)=>{
-    const cls=r["위험등급"]==="상"?"risk-high":
-              r["위험등급"]==="중"?"risk-mid":"risk-low";
+  items.forEach(r=>{
     tbody.innerHTML+=`
       <tr>
-        <td><input type="checkbox" class="rowCheck" data-i="${i}"></td>
-        <td>${r["NO"]||""}</td>
-        <td>${r["대공종명"]||""}</td>
-        <td>${r["중공종명"]||""}</td>
-        <td>${r["세부공종"]||""}</td>
-        <td>${r["작업내용"]||""}</td>
-        <td>${r["위험요인"]||""}</td>
-        <td>${r["위험분류"]||""}</td>
-        <td class="${cls}">${r["위험등급"]||""}</td>
-        <td>${r["위험감소대책"]||""}</td>
+        <td>${r.NO||""}</td>
+        <td>${r.작업내용||""}</td>
+        <td>${r.위험요인||""}</td>
+        <td>${r.위험등급||""}</td>
+        <td>${r.위험감소대책||""}</td>
       </tr>`;
   });
   tableBox.style.display="block";
 }
 
-checkAll.addEventListener("change",()=>document.querySelectorAll(".rowCheck").forEach(c=>c.checked=checkAll.checked));
-deleteSelected.addEventListener("click",()=>{items=items.filter((_,i)=>!document.querySelector(`.rowCheck[data-i="${i}"]`)?.checked);render();});
-
-/* load */
-loadBtn.addEventListener("click",async ()=>{
-  const id=siteId.value.trim();
-  const round=roundSelect.value;
-  const snap=await getDoc(doc(db,"regularRiskAssessments",id,`round_${round}`));
-  if(!snap.exists()){alert("데이터 없음");return;}
-  const d=snap.data();
-  companyName.value=d.companyName;
-  siteName.value=d.siteName;
-  projectName.value=d.projectName;
-  projectPeriod.value=d.projectPeriod;
-  riskStart.value=d.riskPeriodStart;
-  riskEnd.value=d.riskPeriodEnd;
-  evalDate.value=d.evalDate;
-  items=d.items;
-  render();
-});
-
-/* save */
+/* 저장 */
 saveBtn.addEventListener("click",async ()=>{
-  const id=siteId.value.trim();
-  const round=roundSelect.value;
-  if(!id||!items.length){alert("필수값 누락");return;}
-
-  await setDoc(doc(db,"regularRiskAssessments",id,`round_${round}`),{
-    siteId:id,
-    round:Number(round),
-    companyName:companyName.value,
-    siteName:siteName.value,
-    projectName:projectName.value,
-    projectPeriod:projectPeriod.value,
-    riskPeriodStart:riskStart.value,
-    riskPeriodEnd:riskEnd.value,
-    evalDate:evalDate.value,
+  if(!siteId.value||!items.length){alert("필수값 누락");return;}
+  await setDoc(roundRef(siteId.value, roundSelect.value),{
+    companyName: companyName.value,
+    siteId: siteId.value,
+    round: Number(roundSelect.value),
+    evalDate: evalDate.value,
     items,
-    updatedAt:serverTimestamp()
+    updatedAt: serverTimestamp()
   });
-
   alert("저장 완료");
 });
 
-/* delete */
-deleteBtn.addEventListener("click",async ()=>{
-  if(!confirm("해당 회차 삭제?"))return;
-  await deleteDoc(doc(db,"regularRiskAssessments",siteId.value,`round_${roundSelect.value}`));
-  location.reload();
+/* 불러오기 */
+loadBtn.addEventListener("click",async ()=>{
+  const snap = await getDoc(roundRef(siteId.value, roundSelect.value));
+  if(!snap.exists()){alert("저장된 데이터 없음");return;}
+  const d = snap.data();
+  companyName.value = d.companyName || "";
+  evalDate.value = d.evalDate || "";
+  items = d.items || [];
+  render();
 });
 
-/* pdf */
+/* PDF 출력 */
 pdfBtn.addEventListener("click",()=>{
-  p_round.textContent=roundSelect.value;
-  p_period.textContent=`${riskStart.value} ~ ${riskEnd.value}`;
-  p_date.textContent=evalDate.value;
-  p_company.textContent=companyName.value;
-  p_site.textContent=siteName.value;
-  p_project.textContent=projectName.value;
+  p_company.textContent = companyName.value;
+  p_site.textContent = siteSelect.options[siteSelect.selectedIndex].text;
+  p_round.textContent = roundSelect.value;
+  p_evalDate.textContent = evalDate.value;
 
   pdfTable.innerHTML="";
   items.forEach(r=>{
-    const cls=r["위험등급"]==="상"?"risk-high":
-              r["위험등급"]==="중"?"risk-mid":"risk-low";
     pdfTable.innerHTML+=`
       <tr>
-        <td>${r["NO"]||""}</td>
-        <td>${r["대공종명"]||""}</td>
-        <td>${r["중공종명"]||""}</td>
-        <td>${r["세부공종"]||""}</td>
-        <td>${r["작업내용"]||""}</td>
-        <td>${r["위험요인"]||""}</td>
-        <td>${r["위험분류"]||""}</td>
-        <td class="${cls}">${r["위험등급"]||""}</td>
-        <td>${r["위험감소대책"]||""}</td>
+        <td>${r.NO||""}</td>
+        <td>${r.작업내용||""}</td>
+        <td>${r.위험요인||""}</td>
+        <td>${r.위험등급||""}</td>
+        <td>${r.위험감소대책||""}</td>
       </tr>`;
   });
 
