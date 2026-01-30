@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <title>관리자 전체 현황 | 위험성평가</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <style>
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:"Noto Sans KR",system-ui;
+      background:#f4f7ff;
+      color:#0b1b3b;
+    }
+
+    header{
+      height:56px;
+      background:#0b2a4f;
+      color:#fff;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:0 18px;
+      font-weight:800;
+    }
+
+    /* 탭 */
+    .tabs{
+      display:flex;
+      gap:6px;
+      padding:10px 14px;
+      background:#e9efff;
+      border-bottom:1px solid #cfd7ea;
+    }
+    .tab{
+      padding:8px 14px;
+      border-radius:8px;
+      font-weight:800;
+      font-size:13px;
+      cursor:pointer;
+      background:#fff;
+      border:1px solid #ccd6f0;
+    }
+    .tab.active{
+      background:#1f5bd8;
+      color:#fff;
+      border-color:#1f5bd8;
+    }
+
+    .layout{
+      display:flex;
+      height:calc(100vh - 56px - 54px);
+    }
+
+    aside{
+      width:200px;
+      background:#155f7d;
+      color:#fff;
+      padding:12px;
+      overflow:auto;
+    }
+    .site{
+      padding:10px;
+      border-radius:6px;
+      cursor:pointer;
+    }
+    .site.active,
+    .site:hover{
+      background:#0e4b63;
+    }
+
+    main{
+      flex:1;
+      padding:14px;
+      overflow:auto;
+    }
+
+    .filters{
+      background:#fff;
+      padding:12px;
+      border-radius:10px;
+      box-shadow:0 6px 16px rgba(0,0,0,.08);
+      margin-bottom:12px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    .filters label{font-weight:700;font-size:13px}
+    .filters input,
+    .filters select{
+      padding:6px 8px;
+      border-radius:6px;
+      border:1px solid #ccd6f0;
+      font-size:13px;
+    }
+    .filters button{
+      padding:6px 14px;
+      border-radius:6px;
+      border:none;
+      background:#1f5bd8;
+      color:#fff;
+      font-weight:700;
+      cursor:pointer;
+    }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      background:#fff;
+      border-radius:10px;
+      overflow:hidden;
+      box-shadow:0 6px 16px rgba(0,0,0,.08);
+    }
+    th{
+      background:#eaf0ff;
+      padding:10px;
+      font-size:13px;
+      text-align:left;
+    }
+    td{
+      padding:8px;
+      border-top:1px solid #e3e9ff;
+      vertical-align:top;
+      font-size:13px;
+    }
+
+    textarea{
+      width:100%;
+      min-height:60px;
+      font-size:12.5px;
+      padding:6px;
+      border-radius:6px;
+      border:1px solid #cbd6f2;
+    }
+
+    .save-btn{
+      padding:6px 10px;
+      border:none;
+      border-radius:6px;
+      background:#12b76a;
+      color:#fff;
+      font-weight:700;
+      cursor:pointer;
+      font-size:12px;
+    }
+
+    .toast{
+      position:fixed;
+      left:16px;
+      bottom:16px;
+      background:#0b1b3b;
+      color:#fff;
+      padding:10px 12px;
+      border-radius:10px;
+      display:none;
+      font-size:13px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>동진토건 위험성평가 관리자</div>
+  <div>ADMIN</div>
+</header>
+
+<!-- 탭 -->
+<div class="tabs">
+  <div class="tab active" data-type="initial">최초 위험성평가</div>
+  <div class="tab" data-type="periodic">정기 위험성평가</div>
+  <div class="tab" data-type="adHoc">수시 위험성평가</div>
+</div>
+
+<div class="layout">
+  <!-- 현장 -->
+  <aside id="siteList"></aside>
+
+  <!-- 메인 -->
+  <main>
+    <div class="filters">
+      <label>회차</label>
+      <select id="roundSel"><option value="">전체</option></select>
+
+      <label>공종</label>
+      <select id="tradeSel"><option value="">전체</option></select>
+
+      <label>위험요인</label>
+      <input id="riskKey">
+
+      <label>개선대책</label>
+      <input id="solKey">
+
+      <button id="btnSearch">조회</button>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>구분</th>
+          <th>회차/일자</th>
+          <th>공종</th>
+          <th>위험요인</th>
+          <th>개선대책</th>
+          <th style="width:260px">비고(관리자)</th>
+          <th>저장</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+import {
+  getFirestore, collection, getDocs, query, where,
+  doc, updateDoc
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+const app = initializeApp({
+  apiKey: "AIzaSyDO0z7h5WVsyHob7PAJLzOBFi8wCifAsdY",
+  projectId: "dongjin-risk-system"
+});
+const db = getFirestore(app);
+
+const siteListEl = document.getElementById("siteList");
+const roundSel = document.getElementById("roundSel");
+const tradeSel = document.getElementById("tradeSel");
+const riskKey = document.getElementById("riskKey");
+const solKey = document.getElementById("solKey");
+const tbody = document.getElementById("tbody");
+const toastEl = document.getElementById("toast");
+
+let currentSite = "";
+let currentType = "initial";
+let raw = [];
+
+function toast(msg){
+  toastEl.textContent = msg;
+  toastEl.style.display = "block";
+  setTimeout(()=>toastEl.style.display="none",1500);
+}
+
+/* 탭 */
+document.querySelectorAll(".tab").forEach(tab=>{
+  tab.onclick = ()=>{
+    document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+    tab.classList.add("active");
+    currentType = tab.dataset.type;
+    if(currentSite) loadData();
+  };
+});
+
+/* 현장 */
+async function loadSites(){
+  const snap = await getDocs(collection(db,"sites"));
+  siteListEl.innerHTML="";
+  snap.forEach(d=>{
+    const s=d.data();
+    if(!s.active) return;
+    const div=document.createElement("div");
+    div.className="site";
+    div.textContent=s.siteName;
+    div.onclick=()=>{
+      document.querySelectorAll(".site").forEach(el=>el.classList.remove("active"));
+      div.classList.add("active");
+      currentSite=s.siteId;
+      loadData();
+    };
+    siteListEl.appendChild(div);
+  });
+}
+
+/* 데이터 */
+async function loadData(){
+  const q = query(
+    collection(db,"riskAssessments",currentType,"items"),
+    where("siteId","==",currentSite)
+  );
+  const snap = await getDocs(q);
+
+  raw=[];
+  snap.forEach(d=>{
+    raw.push({__id:d.id,...d.data()});
+  });
+  render();
+}
+
+function render(){
+  tbody.innerHTML="";
+  raw.filter(d=>{
+    if(roundSel.value && String(d.round)!==roundSel.value) return false;
+    if(tradeSel.value && d.meta?.tradeLarge!==tradeSel.value) return false;
+    if(riskKey.value && !JSON.stringify(d).includes(riskKey.value)) return false;
+    if(solKey.value && !JSON.stringify(d).includes(solKey.value)) return false;
+    return true;
+  }).forEach(d=>{
+    tbody.innerHTML+=`
+      <tr>
+        <td>${currentType}</td>
+        <td>${d.round || d.meta?.meetingDate || ""}</td>
+        <td>${d.meta?.tradeLarge||""}</td>
+        <td>${d.risks?.[0]?.risk||""}</td>
+        <td>${d.risks?.[0]?.solution||""}</td>
+        <td>
+          <textarea data-id="${d.__id}">${d.remark||""}</textarea>
+        </td>
+        <td>
+          <button class="save-btn" data-id="${d.__id}">저장</button>
+        </td>
+      </tr>`;
+  });
+
+  document.querySelectorAll(".save-btn").forEach(btn=>{
+    btn.onclick=async()=>{
+      const id=btn.dataset.id;
+      const ta=document.querySelector(`textarea[data-id="${id}"]`);
+      await updateDoc(
+        doc(db,"riskAssessments",currentType,"items",id),
+        {remark:ta.value,remarkUpdatedAt:new Date()}
+      );
+      toast("비고 저장 완료");
+    };
+  });
+}
+
+document.getElementById("btnSearch").onclick=render;
+
+loadSites();
+</script>
+
+</body>
+</html>

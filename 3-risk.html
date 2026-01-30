@@ -867,9 +867,7 @@ th:nth-child(12){ min-width:60px; }
    0) 설정 (Apps Script)
 ======================= */
 // ✅ Apps Script 웹앱 URL (반드시 /exec)
-const GAS_URL = "https://script.google.com/macros/s/AKfycbyRkDmzOizieU1ag3zS5Du3lA4HzyJJET0CnqsmNNyl4Jxy583StKG3R2YW_3v_irmY/exec";
-
-
+const GAS_URL = "https://script.google.com/macros/s/AKfycbyA3eWajF3YCQCP1o7bu2LlU_rdPTvRoSQkZQTQtdQqUbBn1rvahO5Wk3QpOMvjGxfO/exec";
 /* ✅ Firebase (사용자 제공 config 그대로) */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 import {
@@ -1400,7 +1398,7 @@ async function analyzeRow(tr){
   renderScore(tr);
 
   try {
-  const out = await callGAS("analyzeRisk", {
+  const out = await callGAS("analyzeRiskJson", {
     riskFactor: risk
   });
 
@@ -1408,11 +1406,8 @@ async function analyzeRow(tr){
   probEl.value   = String(out.prob || "");
   sevEl.value    = String(out.sev || "");
 
-  if (Array.isArray(out.solutions)) {
-    solEl.value = out.solutions.join("\n");
-  } else {
-    solEl.value = "";
-  }
+  solEl.value = out.solutionText || "";
+
 
   renderScore(tr);
 
@@ -1462,9 +1457,8 @@ async function generateSummary(){
 
   try{
     // ✅ generateEducation 함수가 있으면 그걸 쓰고, 없으면 analyzeRisk로 자동 fallback
-    const out = await callGAS("generateSummary", {
-  risks: allRisks,
-  solutions: allSolutions
+    const out = await callGAS("generateEducation", {
+  content: allSolutions
 });
 
 edu1.value = out.edu1 || "";
@@ -1602,7 +1596,7 @@ await loadTradesFromFirestore();
   tradeSmallEl.value
 );
 
-  const ref = doc(db, "riskAssessments", id);
+  const ref = doc(db, "riskAssessments", "adHoc", "items", id);
 
   btnSave.disabled = true;
   try{
@@ -1611,7 +1605,15 @@ await loadTradesFromFirestore();
       ...data,
       title: fixedTitle,
       updatedAt: serverTimestamp(),
-    };
+  siteId: data.site,
+  type: "adHoc",               // 수시 고정
+  round: data.round,
+
+  title: fixedTitle,
+  updatedAt: serverTimestamp(),
+};
+
+
     if(!existing.exists()){
       payload.createdAt = serverTimestamp();
     }
