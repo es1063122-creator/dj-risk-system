@@ -867,7 +867,7 @@ th:nth-child(12){ min-width:60px; }
    0) 설정 (Apps Script)
 ======================= */
 // ✅ Apps Script 웹앱 URL (반드시 /exec)
-const GAS_URL = "https://script.google.com/macros/s/AKfycbyA3eWajF3YCQCP1o7bu2LlU_rdPTvRoSQkZQTQtdQqUbBn1rvahO5Wk3QpOMvjGxfO/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbx18nvtzR_vm_3q9g5S1pHeDjUKJkKrWxEeU-SDzh4-_s54uJy4xOw7qj4qnMSaoMEy/exec";
 /* ✅ Firebase (사용자 제공 config 그대로) */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 import {
@@ -1668,10 +1668,11 @@ async function loadPreviousRound(){
 
   try{
     const q = query(
-      collection(db, "riskAssessments"),
-      where("site","==",site)
-    );
-    const snap = await getDocs(q);
+  collection(db, "riskAssessments", "adHoc", "items"),
+  where("site","==",site)
+);
+const snap = await getDocs(q);
+
 
     if(snap.empty){
       toast("저장된 회차가 없습니다.");
