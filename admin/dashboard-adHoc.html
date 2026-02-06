@@ -1,164 +1,78 @@
 <!doctype html>
 <html lang="ko">
 <head>
-  <meta charset="utf-8">
-  <title>관리자 전체 현황 | 위험성평가</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="utf-8">
+<title>관리자 전체 현황 | 위험성평가</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <style>
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family:"Noto Sans KR",system-ui;
-      background:#f4f7ff;
-      color:#0b1b3b;
-    }
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:"Noto Sans KR",system-ui;background:#f4f7ff;color:#0b1b3b}
+header{height:56px;background:#0b2a4f;color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 18px;font-weight:800}
 
-    header{
-      height:56px;
-      background:#0b2a4f;
-      color:#fff;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      padding:0 18px;
-      font-weight:800;
-    }
+/* tabs */
+.tabs{display:flex;gap:6px;padding:10px 14px;background:#e9efff;border-bottom:1px solid #cfd7ea}
+.tab{padding:8px 14px;border-radius:8px;font-weight:800;font-size:13px;cursor:pointer;background:#fff;border:1px solid #ccd6f0}
+.tab.active{background:#1f5bd8;color:#fff;border-color:#1f5bd8}
 
-    /* 탭 */
-    .tabs{
-      display:flex;
-      gap:6px;
-      padding:10px 14px;
-      background:#e9efff;
-      border-bottom:1px solid #cfd7ea;
-    }
-    .tab{
-      padding:8px 14px;
-      border-radius:8px;
-      font-weight:800;
-      font-size:13px;
-      cursor:pointer;
-      background:#fff;
-      border:1px solid #ccd6f0;
-    }
-    .tab.active{
-      background:#1f5bd8;
-      color:#fff;
-      border-color:#1f5bd8;
-    }
+/* layout */
+.layout{display:flex;height:calc(100vh - 56px - 54px)}
+aside{width:200px;background:#155f7d;color:#fff;padding:12px;overflow:auto}
+.site{padding:10px;border-radius:6px;cursor:pointer}
+.site.active,.site:hover{background:#0e4b63}
+main{flex:1;padding:14px;overflow:auto}
 
-    .layout{
-      display:flex;
-      height:calc(100vh - 56px - 54px);
-    }
+/* summary */
+.summary{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:14px;
+  margin-bottom:14px
+}
+.sum-card{
+  background:#fff;
+  border-radius:16px;
+  padding:18px;
+  box-shadow:0 8px 20px rgba(0,0,0,.08);
+  font-weight:800
+}
+.sum-card .label{font-size:14px;color:#475467}
+.sum-card .value{font-size:26px;margin-top:6px}
+.sum-total{background:#0b2a4f;color:#fff}
+.sum-initial{background:#2563eb;color:#fff}
+.sum-periodic{background:#facc15;color:#78350f}
+.sum-adHoc{background:#ef4444;color:#fff}
 
-    aside{
-      width:200px;
-      background:#155f7d;
-      color:#fff;
-      padding:12px;
-      overflow:auto;
-    }
-    .site{
-      padding:10px;
-      border-radius:6px;
-      cursor:pointer;
-    }
-    .site.active,
-    .site:hover{
-      background:#0e4b63;
-    }
+/* TOP5 */
+.top5{
+  background:#fff;
+  border-radius:16px;
+  padding:18px;
+  box-shadow:0 8px 20px rgba(0,0,0,.08);
+  margin-bottom:14px
+}
+.top5 h3{margin:0 0 10px;font-size:16px}
+.top5 ol{margin:0;padding-left:20px;font-weight:700}
+.top5 li{margin-bottom:6px}
 
-    main{
-      flex:1;
-      padding:14px;
-      overflow:auto;
-    }
+/* table */
+table{width:100%;border-collapse:collapse;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 6px 16px rgba(0,0,0,.08)}
+th{background:#eaf0ff;padding:10px;font-size:13px;text-align:left}
+td{padding:8px;border-top:1px solid #e3e9ff;vertical-align:top;font-size:13px}
 
-    .filters{
-      background:#fff;
-      padding:12px;
-      border-radius:10px;
-      box-shadow:0 6px 16px rgba(0,0,0,.08);
-      margin-bottom:12px;
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      align-items:center;
-    }
-    .filters label{font-weight:700;font-size:13px}
-    .filters input,
-    .filters select{
-      padding:6px 8px;
-      border-radius:6px;
-      border:1px solid #ccd6f0;
-      font-size:13px;
-    }
-    .filters button{
-      padding:6px 14px;
-      border-radius:6px;
-      border:none;
-      background:#1f5bd8;
-      color:#fff;
-      font-weight:700;
-      cursor:pointer;
-    }
+/* row colors */
+tr.type-initial td{background:#f0f7ff}
+tr.type-periodic td{background:#fefce8}
+tr.type-adHoc td{background:#fff1f2}
+tr:hover td{background:#e6edff}
 
-    table{
-      width:100%;
-      border-collapse:collapse;
-      background:#fff;
-      border-radius:10px;
-      overflow:hidden;
-      box-shadow:0 6px 16px rgba(0,0,0,.08);
-    }
-    th{
-      background:#eaf0ff;
-      padding:10px;
-      font-size:13px;
-      text-align:left;
-    }
-    td{
-      padding:8px;
-      border-top:1px solid #e3e9ff;
-      vertical-align:top;
-      font-size:13px;
-    }
-
-    textarea{
-      width:100%;
-      min-height:60px;
-      font-size:12.5px;
-      padding:6px;
-      border-radius:6px;
-      border:1px solid #cbd6f2;
-    }
-
-    .save-btn{
-      padding:6px 10px;
-      border:none;
-      border-radius:6px;
-      background:#12b76a;
-      color:#fff;
-      font-weight:700;
-      cursor:pointer;
-      font-size:12px;
-    }
-
-    .toast{
-      position:fixed;
-      left:16px;
-      bottom:16px;
-      background:#0b1b3b;
-      color:#fff;
-      padding:10px 12px;
-      border-radius:10px;
-      display:none;
-      font-size:13px;
-    }
-  </style>
+/* common */
+textarea{width:100%;min-height:60px;font-size:12.5px;padding:6px;border-radius:6px;border:1px solid #cbd6f2}
+.save-btn{padding:6px 10px;border:none;border-radius:6px;background:#12b76a;color:#fff;font-weight:700;cursor:pointer;font-size:12px}
+.toast{position:fixed;left:16px;bottom:16px;background:#0b1b3b;color:#fff;padding:10px 12px;border-radius:10px;display:none;font-size:13px}
+</style>
 </head>
+
 <body>
 
 <header>
@@ -166,171 +80,210 @@
   <div>ADMIN</div>
 </header>
 
-<!-- 탭 -->
 <div class="tabs">
-  <div class="tab active" data-type="initial">최초 위험성평가</div>
-  <div class="tab" data-type="periodic">정기 위험성평가</div>
-  <div class="tab" data-type="adHoc">수시 위험성평가</div>
+  <div class="tab active" data-type="initial">최초</div>
+  <div class="tab" data-type="periodic">정기</div>
+  <div class="tab" data-type="adHoc">수시</div>
 </div>
 
 <div class="layout">
-  <!-- 현장 -->
-  <aside id="siteList"></aside>
+<aside id="siteList"></aside>
 
-  <!-- 메인 -->
-  <main>
-    <div class="filters">
-      <label>회차</label>
-      <select id="roundSel"><option value="">전체</option></select>
+<main>
 
-      <label>공종</label>
-      <select id="tradeSel"><option value="">전체</option></select>
+<!-- ===== 요약 ===== -->
+<div class="summary">
+  <div id="sumTotal" class="sum-card sum-total"></div>
+  <div id="sumInitial" class="sum-card sum-initial"></div>
+  <div id="sumPeriodic" class="sum-card sum-periodic"></div>
+  <div id="sumAdHoc" class="sum-card sum-adHoc"></div>
+</div>
 
-      <label>위험요인</label>
-      <input id="riskKey">
+<!-- ===== TOP5 ===== -->
+<div class="top5">
+  <h3>📊 현장 위험요인 TOP 5</h3>
+  <ol id="top5List"></ol>
+</div>
 
-      <label>개선대책</label>
-      <input id="solKey">
+<table>
+<thead>
+<tr>
+  <th>구분</th>
+  <th>회차/일자</th>
+  <th>위험요인</th>
+  <th>개선대책</th>
+  <th style="width:240px">비고(관리자)</th>
+  <th>저장</th>
+</tr>
+</thead>
+<tbody id="tbody"></tbody>
+</table>
 
-      <button id="btnSearch">조회</button>
-    </div>
-
-    <table>
-      <thead>
-        <tr>
-          <th>구분</th>
-          <th>회차/일자</th>
-          <th>공종</th>
-          <th>위험요인</th>
-          <th>개선대책</th>
-          <th style="width:260px">비고(관리자)</th>
-          <th>저장</th>
-        </tr>
-      </thead>
-      <tbody id="tbody"></tbody>
-    </table>
-  </main>
+</main>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-import {
-  getFirestore, collection, getDocs, query, where,
-  doc, updateDoc
-} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+import { getFirestore, collection, getDocs, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
+/* firebase */
 const app = initializeApp({
-  apiKey: "AIzaSyDO0z7h5WVsyHob7PAJLzOBFi8wCifAsdY",
-  projectId: "dongjin-risk-system"
+  apiKey:"AIzaSyDO0z7h5WVsyHob7PAJLzOBFi8wCifAsdY",
+  projectId:"dongjin-risk-system"
 });
 const db = getFirestore(app);
 
-const siteListEl = document.getElementById("siteList");
-const roundSel = document.getElementById("roundSel");
-const tradeSel = document.getElementById("tradeSel");
-const riskKey = document.getElementById("riskKey");
-const solKey = document.getElementById("solKey");
-const tbody = document.getElementById("tbody");
-const toastEl = document.getElementById("toast");
+const siteListEl=document.getElementById("siteList");
+const tbody=document.getElementById("tbody");
+const toastEl=document.getElementById("toast");
+const top5List=document.getElementById("top5List");
 
-let currentSite = "";
-let currentType = "initial";
-let raw = [];
+let currentSite="";
+let currentType="initial";
+let rawRows=[];
 
-function toast(msg){
-  toastEl.textContent = msg;
-  toastEl.style.display = "block";
-  setTimeout(()=>toastEl.style.display="none",1500);
-}
+/* utils */
+const CIRCLE=["①","②","③","④","⑤","⑥","⑦","⑧","⑨","⑩"];
+function toast(m){toastEl.textContent=m;toastEl.style.display="block";setTimeout(()=>toastEl.style.display="none",1500);}
 
-/* 탭 */
-document.querySelectorAll(".tab").forEach(tab=>{
-  tab.onclick = ()=>{
-    document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
-    tab.classList.add("active");
-    currentType = tab.dataset.type;
+/* tabs */
+document.querySelectorAll(".tab").forEach(t=>{
+  t.onclick=()=>{
+    document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+    t.classList.add("active");
+    currentType=t.dataset.type;
     if(currentSite) loadData();
   };
 });
 
-/* 현장 */
-async function loadSites(){
-  const snap = await getDocs(collection(db,"sites"));
-  siteListEl.innerHTML="";
+/* sites */
+(async()=>{
+  const snap=await getDocs(collection(db,"sites"));
   snap.forEach(d=>{
-    const s=d.data();
-    if(!s.active) return;
+    if(!d.data().active)return;
     const div=document.createElement("div");
     div.className="site";
-    div.textContent=s.siteName;
+    div.textContent=d.data().siteName;
     div.onclick=()=>{
-      document.querySelectorAll(".site").forEach(el=>el.classList.remove("active"));
+      document.querySelectorAll(".site").forEach(s=>s.classList.remove("active"));
       div.classList.add("active");
-      currentSite=s.siteId;
+      currentSite=d.data().siteId;
       loadData();
     };
     siteListEl.appendChild(div);
   });
-}
+})();
 
-/* 데이터 */
+/* load */
 async function loadData(){
-  const q = query(
-    collection(db,"riskAssessments",currentType,"items"),
-    where("siteId","==",currentSite)
-  );
-  const snap = await getDocs(q);
+  rawRows=[];
+  tbody.innerHTML="";
+  top5List.innerHTML="";
 
-  raw=[];
-  snap.forEach(d=>{
-    raw.push({__id:d.id,...d.data()});
-  });
+  if(currentType==="initial"){
+    const snap=await getDoc(doc(db,"initialRiskAssessments",currentSite));
+    if(snap.exists()){
+      snap.data().items.forEach((r,i)=>{
+        rawRows.push({
+          type:"initial",
+          date:snap.data().evalDate||"",
+          risk:`${CIRCLE[i]} ${r.위험요인||""}`,
+          solution:`${CIRCLE[i]} ${r.위험감소대책||""}`,
+          remark:snap.data().remark||"",
+          path:["initialRiskAssessments",currentSite]
+        });
+      });
+    }
+  }
+
+  if(currentType==="periodic"){
+    const rounds=await getDocs(collection(db,"regularRiskAssessments",currentSite,"rounds"));
+    rounds.forEach(rd=>{
+      const d=rd.data();
+      (d.items||[]).forEach((r,i)=>{
+        rawRows.push({
+          type:"periodic",
+          date:`${d.round}차 (${d.evalDate||""})`,
+          risk:`${CIRCLE[i]} ${r.위험요인||""}`,
+          solution:`${CIRCLE[i]} ${r.위험감소대책||""}`,
+          remark:d.remark||"",
+          path:["regularRiskAssessments",currentSite,"rounds",rd.id]
+        });
+      });
+    });
+  }
+
+  if(currentType==="adHoc"){
+    const snap=await getDocs(collection(db,"riskAssessments","adHoc","items"));
+    snap.forEach(d=>{
+      if(d.data().siteId!==currentSite)return;
+      (d.data().risks||[]).forEach((r,i)=>{
+        rawRows.push({
+          type:"adHoc",
+          date:d.data().round||"",
+          risk:`${CIRCLE[i]} ${r.risk||""}`,
+          solution:`${CIRCLE[i]} ${r.solution||""}`,
+          remark:d.data().remark||"",
+          path:["riskAssessments","adHoc","items",d.id]
+        });
+      });
+    });
+  }
+
+  updateSummary();
+  updateTop5();
   render();
 }
 
-function render(){
-  tbody.innerHTML="";
-  raw.filter(d=>{
-    if(roundSel.value && String(d.round)!==roundSel.value) return false;
-    if(tradeSel.value && d.meta?.tradeLarge!==tradeSel.value) return false;
-    if(riskKey.value && !JSON.stringify(d).includes(riskKey.value)) return false;
-    if(solKey.value && !JSON.stringify(d).includes(solKey.value)) return false;
-    return true;
-  }).forEach(d=>{
-    tbody.innerHTML+=`
-      <tr>
-        <td>${currentType}</td>
-        <td>${d.round || d.meta?.meetingDate || ""}</td>
-        <td>${d.meta?.tradeLarge||""}</td>
-        <td>${d.risks?.[0]?.risk||""}</td>
-        <td>${d.risks?.[0]?.solution||""}</td>
-        <td>
-          <textarea data-id="${d.__id}">${d.remark||""}</textarea>
-        </td>
-        <td>
-          <button class="save-btn" data-id="${d.__id}">저장</button>
-        </td>
-      </tr>`;
-  });
-
-  document.querySelectorAll(".save-btn").forEach(btn=>{
-    btn.onclick=async()=>{
-      const id=btn.dataset.id;
-      const ta=document.querySelector(`textarea[data-id="${id}"]`);
-      await updateDoc(
-        doc(db,"riskAssessments",currentType,"items",id),
-        {remark:ta.value,remarkUpdatedAt:new Date()}
-      );
-      toast("비고 저장 완료");
-    };
-  });
+/* summary */
+function updateSummary(){
+  document.getElementById("sumTotal").innerHTML=`<div class="label">전체 위험요인</div><div class="value">${rawRows.length}건</div>`;
+  document.getElementById("sumInitial").innerHTML=`<div class="label">최초</div><div class="value">${rawRows.filter(r=>r.type==="initial").length}</div>`;
+  document.getElementById("sumPeriodic").innerHTML=`<div class="label">정기</div><div class="value">${rawRows.filter(r=>r.type==="periodic").length}</div>`;
+  document.getElementById("sumAdHoc").innerHTML=`<div class="label">수시</div><div class="value">${rawRows.filter(r=>r.type==="adHoc").length}</div>`;
 }
 
-document.getElementById("btnSearch").onclick=render;
+/* TOP5 */
+function updateTop5(){
+  const map={};
+  rawRows.forEach(r=>{
+    const key=r.risk.replace(/[①-⑩]/g,"").trim();
+    if(!key)return;
+    map[key]=(map[key]||0)+1;
+  });
+  Object.entries(map)
+    .sort((a,b)=>b[1]-a[1])
+    .slice(0,5)
+    .forEach(([k,v])=>{
+      const li=document.createElement("li");
+      li.textContent=`${k} (${v}회)`;
+      top5List.appendChild(li);
+    });
+}
 
-loadSites();
+/* render */
+function render(){
+  tbody.innerHTML="";
+  rawRows.forEach((r,i)=>{
+    const tr=document.createElement("tr");
+    tr.className=`type-${r.type}`;
+    tr.innerHTML=`
+      <td>${r.type}</td>
+      <td>${r.date}</td>
+      <td>${r.risk}</td>
+      <td>${r.solution}</td>
+      <td><textarea>${r.remark}</textarea></td>
+      <td><button class="save-btn">저장</button></td>
+    `;
+    tr.querySelector(".save-btn").onclick=async()=>{
+      await updateDoc(doc(db,...r.path),{remark:tr.querySelector("textarea").value});
+      toast("저장 완료");
+    };
+    tbody.appendChild(tr);
+  });
+}
 </script>
 
 </body>
