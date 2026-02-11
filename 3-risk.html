@@ -517,7 +517,17 @@ th:nth-child(12){ min-width:60px; }
     line-height:1.35;
     color:#000;
   }
-
+/* ===============================
+   ❌ 위험요인 / 개선대책은 박스 제거
+=============================== */
+@media print{
+  .printText[data-print="risk"],
+  .printText[data-print="solution"]{
+    border:none !important;
+    padding:0 !important;
+    background:transparent !important;
+  }
+}
   /* 셀 높이 자동 확장 */
   td{
     height:auto !important;
@@ -527,6 +537,24 @@ th:nth-child(12){ min-width:60px; }
   tr{
     page-break-inside:auto !important;
     break-inside:auto !important;
+  }
+
+
+  /* 🟢 출력용 텍스트만 표시 */
+  .printText{
+    display:block !important;
+    white-space:pre-wrap;
+    word-break:break-word;
+    font-size:10.5px;
+    line-height:1.35;
+    color:#000;
+
+    /* ✅ 추가: 입력칸처럼 보이게 */
+    border:1px solid #bbb;      /* 네모 테두리 */
+    border-radius:6px;
+    padding:6px 8px;
+    background:#fff;
+    box-sizing:border-box;
   }
 }
 
@@ -713,6 +741,7 @@ th:nth-child(12){ min-width:60px; }
 - 굴틀목공 4
 - 철근공 3
 - 장비기사 1"></textarea>
+ <div class="printText" id="manpowerPrint"></div>
       </div>
 
       <div class="field" style="grid-column: span 5;">
@@ -720,6 +749,7 @@ th:nth-child(12){ min-width:60px; }
         <textarea id="equipments" placeholder="예:
 - 굴착기(0.7) 1대
 - 지게차 1대"></textarea>
+ <div class="printText" id="equipmentsPrint"></div>
       </div>
     </div>
   </div>
@@ -846,7 +876,7 @@ th:nth-child(12){ min-width:60px; }
 
     <textarea id="workerOpinion" class="adminInput" placeholder="근로자 의견을 자유롭게 작성하세요 (공란 가능)"
   style="min-height:140px;"></textarea>
-
+ <div class="printText" id="workerOpinionPrint"></div>
   </div>
 
 
@@ -1891,6 +1921,25 @@ window.addEventListener("beforeprint", () => {
     if (risk && prRisk) prRisk.textContent = risk.value;
     if (sol && prSol)   prSol.textContent  = sol.value;
   });
+  const worker = document.getElementById("workerOpinion");
+  const workerPrint = document.getElementById("workerOpinionPrint");
+
+  if (worker && workerPrint) {
+    workerPrint.textContent = worker.value || "";
+  }
+// ===== 직종별 인원 / 투입장비 출력 =====
+const manpower = document.getElementById("manpower");
+const manpowerPrint = document.getElementById("manpowerPrint");
+if (manpower && manpowerPrint) {
+  manpowerPrint.textContent = manpower.value || "";
+}
+
+const equipments = document.getElementById("equipments");
+const equipmentsPrint = document.getElementById("equipmentsPrint");
+if (equipments && equipmentsPrint) {
+  equipmentsPrint.textContent = equipments.value || "";
+}
+
 });
 
 </script>
