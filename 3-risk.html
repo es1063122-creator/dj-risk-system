@@ -1318,8 +1318,7 @@ function makeRow(prefill=null){
     <td>
       <textarea class="tTa adminInput" data-role="risk" placeholder="위험요인 입력 후 포커스 아웃"></textarea>
       <div class="printText" data-print="risk"></div>
-      <div class="miniNote">AI 자동분석</div>
-    </td>
+     </td>
 
     <td><input class="tIn aiInput" data-role="damage" placeholder="자동"></td>
     <td><input class="tIn aiInput" data-role="prob" placeholder="1~3" inputmode="numeric"></td>
@@ -1830,7 +1829,8 @@ function confirmLoadPrevByTrade(){
   }
 
   tradeLargeEl.value = tradeLarge;
-  roundTextEl.textContent = round;
+  roundEl.value = round;
+syncRoundTitle();
 
   prevLoadBox.style.display = "none";
   setSummaryState("대기","idle");
