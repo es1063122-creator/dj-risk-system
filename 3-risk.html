@@ -1811,21 +1811,30 @@ function confirmLoadPrevByTrade(){
       </tr>
     `;
   }else{
-    prevRisks.forEach((r, i) => {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td class="center">${i+1}</td>
-        <td>${(r.risk || "").replaceAll("<","&lt;")}</td>
-        <td>${(r.solution || "").replaceAll("<","&lt;")}</td>
-        <td>
-          <textarea class="tTa adminInput"
-            data-role="prevResult"
-            data-prev-index="${i}"
-            placeholder="이행결과 작성"></textarea>
-        </td>
-      `;
-      prevFeedbackBody.appendChild(tr);
-    });
+prevRisks.forEach((r, i) => {
+
+  // ✅ 저장되어 있던 이행결과 찾기
+  let savedResult = "";
+  if (Array.isArray(data.prevFeedback)) {
+    const found = data.prevFeedback.find(p => p.prevIndex === i);
+    if (found) savedResult = found.result || "";
+  }
+
+  const tr = document.createElement("tr");
+  tr.innerHTML = `
+    <td class="center">${i+1}</td>
+    <td>${(r.risk || "").replaceAll("<","&lt;")}</td>
+    <td>${(r.solution || "").replaceAll("<","&lt;")}</td>
+    <td>
+      <textarea class="tTa adminInput"
+        data-role="prevResult"
+        data-prev-index="${i}"
+        placeholder="이행결과 작성">${savedResult}</textarea>
+    </td>
+  `;
+
+  prevFeedbackBody.appendChild(tr);
+});
   }
 
   tradeLargeEl.value = tradeLarge;
