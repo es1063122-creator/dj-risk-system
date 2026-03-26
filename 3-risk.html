@@ -201,88 +201,170 @@
 
     /* ===== Table ===== */
     .tableWrap{
-      border:1px solid rgba(232,236,246,.95);
-      border-radius:14px;
+      border:1.5px solid #b8c6e6;
+      border-radius:16px;
       overflow:auto;
       background:#fff;
+      box-shadow:0 4px 16px rgba(0,40,128,.07);
     }
     table{
       width:100%;
       border-collapse:separate;
       border-spacing:0;
-      min-width:1320px; /* 버전1처럼 넉넉 */
+      min-width:1400px;
     }
     thead th{
       position:sticky;
       top:0;
       z-index:2;
-      background:#e9f0ff; 
-      border-bottom:2px solid #b8c6e6;
-      padding:10px 8px;
+      background:linear-gradient(180deg,#dce8ff 0%,#c8d9f8 100%);
+      border-bottom:2.5px solid #8faadc;
+      border-right:1px solid #b0c4e8;
+      padding:12px 10px;
       font-size:12.5px;
-      color:#102a56;
+      color:#0a2352;
       font-weight:900;
-      text-align:left;
+      text-align:center;
       white-space:nowrap;
+      letter-spacing:-.3px;
     }
+    thead th:last-child{ border-right:none; }
+
+    /* 컬럼별 헤더 색 강조 */
+    thead th.col-risk{
+      background:linear-gradient(180deg,#ffe8d0 0%,#fdd5b0 100%);
+      border-bottom-color:#e8a060;
+      color:#6b2800;
+    }
+    thead th.col-solution{
+      background:linear-gradient(180deg,#d0e8ff 0%,#b0d4ff 100%);
+      border-bottom-color:#5090d8;
+      color:#003070;
+    }
+
     tbody td{
-      border-bottom:1.2px solid #d6deef;
-      padding:8px;
+      border-bottom:1px solid #dde6f5;
+      border-right:1px solid #e8edf8;
+      padding:0;
       vertical-align:top;
       background:#fff;
+      transition:background .15s;
     }
-    tbody tr:hover td{
-      background:#f2f6ff;
+    tbody td:last-child{ border-right:none; }
+    tbody tr:nth-child(even) td{ background:#f7faff; }
+    tbody tr:hover td{ background:#eef4ff !important; }
+    tbody tr:hover td.cell-risk{ background:#fff5ee !important; }
+    tbody tr:hover td.cell-solution{ background:#e8f2ff !important; }
+
+    /* 위험요인 / 개선대책 컬럼 배경 */
+    td.cell-risk{
+      background:#fffaf5 !important;
+      border-right:2px solid #f0c080 !important;
+    }
+    td.cell-solution{
+      background:#f5faff !important;
+      border-right:2px solid #90b8e8 !important;
     }
 
-    tbody tr:hover td{background:#fbfdff}
     .center{text-align:center}
     .w-ck{width:44px}
-    .w-no{width:54px}
+    .w-no{width:48px}
 
-    /* 테이블 안 input/textarea: 버전1처럼 낮고 깔끔 */
-    .tIn, .tSel, .tTa{
+    /* ===== 테이블 내 일반 input ===== */
+    .tIn, .tSel{
       width:100%;
-      border:1.3px solid #c6d0e6;
-      border-radius:12px;
-      padding:5px 6px;
-      font-size:11.5px;
-      line-height:1.25;
+      border:none;
+      border-radius:0;
+      padding:10px 9px;
+      font-size:12px;
+      line-height:1.4;
       color:#0b1b3b;
-      background:#ffffff;
+      background:transparent;
+      outline:none;
+      font-family:inherit;
+      display:block;
     }
-      .tIn:focus, .tTa:focus{
-      border-color:#2a6cf6;
-      box-shadow:0 0 0 3px rgba(42,108,246,.18);
+    .tIn:focus, .tSel:focus{
+      background:rgba(42,108,246,.06);
+      box-shadow:inset 0 0 0 2px rgba(42,108,246,.35);
     }
 
-    .tTa{min-height:66px}
+    /* ===== 위험요인/개선대책: auto-grow div ===== */
+    .cellText{
+      display:block;
+      width:100%;
+      min-height:60px;
+      padding:10px 10px;
+      font-size:12.5px;
+      line-height:1.6;
+      color:#0b1b3b;
+      background:transparent;
+      outline:none;
+      border:none;
+      resize:none;
+      font-family:inherit;
+      white-space:pre-wrap;
+      word-break:break-word;
+      box-sizing:border-box;
+      overflow:hidden;
+    }
+    /* contenteditable div처럼 보이도록 */
+    .cellText[contenteditable]:focus{
+      background:rgba(42,108,246,.05);
+      box-shadow:inset 0 0 0 2px rgba(42,108,246,.30);
+      outline:none;
+    }
+    /* hidden textarea (실제 값 보관) */
+    .tTa{
+      display:none !important;
+    }
+
     .miniNote{
       font-size:11px;
       color:var(--muted);
       margin-top:4px;
     }
 
+    /* 위험요인 div 색 */
+    .cellText.adminInput{
+      background:transparent;
+    }
+    .cellText.adminInput:focus{
+      background:rgba(245,158,11,.06);
+      box-shadow:inset 0 0 0 2px rgba(245,158,11,.35);
+    }
+    .cellText.aiInput{
+      background:transparent;
+    }
+    .cellText.aiInput:focus{
+      background:rgba(42,108,246,.06);
+      box-shadow:inset 0 0 0 2px rgba(42,108,246,.35);
+    }
+
     .scoreBox{
       display:flex;
       flex-direction:column;
       gap:6px;
+      align-items:center;
+      justify-content:center;
+      padding:8px 4px;
     }
     .scorePill{
       display:inline-flex;
       align-items:center;
-      gap:6px;
-      padding:6px 10px;
+      gap:5px;
+      padding:5px 10px;
       border-radius:999px;
       font-weight:900;
       font-size:12px;
       width:max-content;
-      border:1px solid rgba(232,236,246,.95);
+      border:1.5px solid rgba(232,236,246,.95);
       background:#fff;
+      box-shadow:0 1px 4px rgba(0,0,0,.08);
     }
    .scoreLow{
   border-color:#12b76a;
-  background:#e9f9f1;
+  background:#e6f9f0;
 }
 .scoreMid{
   border-color:#f59e0b;
@@ -382,7 +464,11 @@ th:nth-child(12){ min-width:60px; }
    @media print{
     body{background:#fff}
     .wrap{padding:0}
-    .card{box-shadow:none; border-radius:12px}
+    .card{
+      box-shadow:none;
+      border-radius:8px;
+      break-inside:avoid-page; /* 카드 통째로 잘리지 않게 */
+    }
 
     /* UI 제거 */
     .btns,
@@ -402,40 +488,109 @@ th:nth-child(12){ min-width:60px; }
       overflow:visible !important;
     }
 
-    thead th{background:#f3f6ff}
+    thead th{
+      background:#f3f6ff !important;
+      -webkit-print-color-adjust:exact;
+      print-color-adjust:exact;
+    }
 
-    input, select, textarea{
+    input, select{
       border:1px solid #bbb;
       box-shadow:none;
     }
 
-    th:nth-child(1),
-    td:nth-child(1){ display:none !important; }
+    /* ===== 위험성평가 메인 테이블 컬럼 (card #riskCard 내부) ===== */
+    #riskCard th:nth-child(1),
+    #riskCard td:nth-child(1){ display:none !important; }
+    #riskCard th:last-child,
+    #riskCard td:last-child{ display:none !important; }
 
-    th:last-child,
-    td:last-child{ display:none !important; }
+    #riskCard th:nth-child(2), #riskCard td:nth-child(2){width:36px}
+    #riskCard th:nth-child(3), #riskCard td:nth-child(3){width:90px}
+    #riskCard th:nth-child(4), #riskCard td:nth-child(4){width:90px}
+    #riskCard th:nth-child(5), #riskCard td:nth-child(5){width:170px}
+    #riskCard th:nth-child(6), #riskCard td:nth-child(6){width:55px;text-align:center}
+    #riskCard th:nth-child(7), #riskCard td:nth-child(7){width:45px;text-align:center}
+    #riskCard th:nth-child(8), #riskCard td:nth-child(8){width:45px;text-align:center}
+    #riskCard th:nth-child(9), #riskCard td:nth-child(9){width:70px;text-align:center}
+    #riskCard th:nth-child(10), #riskCard td:nth-child(10){width:auto}
+    #riskCard th:nth-child(11), #riskCard td:nth-child(11){width:65px}
+    #riskCard th:nth-child(12), #riskCard td:nth-child(12){width:65px}
 
-    th:nth-child(2), td:nth-child(2){width:36px}
-    th:nth-child(3), td:nth-child(3){width:90px}
-    th:nth-child(4), td:nth-child(4){width:90px}
-    th:nth-child(5), td:nth-child(5){width:170px}
-    th:nth-child(6), td:nth-child(6){width:55px;text-align:center}
-    th:nth-child(7), td:nth-child(7){width:45px;text-align:center}
-    th:nth-child(8), td:nth-child(8){width:45px;text-align:center}
-    th:nth-child(9), td:nth-child(9){width:70px;text-align:center}
-    th:nth-child(10), td:nth-child(10){width:auto}
-    th:nth-child(11), td:nth-child(11){width:65px}
-    th:nth-child(12), td:nth-child(12){width:65px}
-
-    td:nth-child(3) input,
-    td:nth-child(4) input{
+    #riskCard td:nth-child(3) input,
+    #riskCard td:nth-child(4) input{
       white-space:normal !important;
       word-break:break-word !important;
       height:auto !important;
       min-height:36px;
     }
 
+    /* ===== 전회차 피드백 테이블 전용 컬럼 ===== */
+    #prevFeedbackCard{
+      break-before:auto;  /* 필요하면 새 페이지에서 시작 */
+      break-inside:auto;  /* 내부는 분할 허용 */
+    }
+    #prevFeedbackCard table{
+      table-layout:fixed !important;
+    }
+    #prevFeedbackCard th:nth-child(1),
+    #prevFeedbackCard td:nth-child(1){ width:44px !important; text-align:center; }
+    #prevFeedbackCard th:nth-child(2),
+    #prevFeedbackCard td:nth-child(2){ width:28% !important; }
+    #prevFeedbackCard th:nth-child(3),
+    #prevFeedbackCard td:nth-child(3){ width:36% !important; }
+    #prevFeedbackCard th:nth-child(4),
+    #prevFeedbackCard td:nth-child(4){ width:auto !important; }
 
+    /* 전회차 셀 내 div 텍스트 */
+    #prevFeedbackCard td div{
+      white-space:pre-wrap !important;
+      word-break:break-word !important;
+      font-size:10px !important;
+      line-height:1.4 !important;
+      padding:6px 8px !important;
+    }
+
+    /* 이행결과 textarea 인쇄 */
+    #prevFeedbackCard textarea[data-role="prevResult"]{
+      width:100% !important;
+      min-height:50px !important;
+      height:auto !important;
+      border:1px solid #bbb !important;
+      box-shadow:none !important;
+      background:#fff !important;
+      font-size:10px !important;
+      line-height:1.4 !important;
+      padding:5px 7px !important;
+      resize:none !important;
+      overflow:visible !important;
+      white-space:pre-wrap !important;
+      word-break:break-word !important;
+    }
+
+    /* 전회차 행 단위 분할 허용 */
+    #prevFeedbackCard tr{
+      page-break-inside:auto !important;
+      break-inside:auto !important;
+    }
+    #prevFeedbackCard td{
+      height:auto !important;
+      vertical-align:top !important;
+    }
+
+    /* 전회차 셀 배경색 인쇄 출력 */
+    #prevFeedbackCard td.cell-risk{
+      background:#fff8f2 !important;
+      -webkit-print-color-adjust:exact;
+      print-color-adjust:exact;
+    }
+    #prevFeedbackCard td.cell-solution{
+      background:#f3f8ff !important;
+      -webkit-print-color-adjust:exact;
+      print-color-adjust:exact;
+    }
+
+    /* ===== 공통 ===== */
     tr, td{
       page-break-inside:auto !important;
       break-inside:auto !important;
@@ -503,9 +658,18 @@ th:nth-child(12){ min-width:60px; }
 /* 인쇄(PDF)에서만 표시 */
 @media print{
 
-  /* 🔴 입력용 textarea 완전 제거 */
-  textarea{
+    /* 🔴 입력용 textarea / contenteditable 완전 제거 (전회차 이행결과 textarea는 유지) */
+  textarea:not([data-role="prevResult"]), [contenteditable]{
     display:none !important;
+  }
+  /* 전회차 이행결과는 인쇄에서도 표시 */
+  textarea[data-role="prevResult"]{
+    display:block !important;
+    border:1px solid #bbb !important;
+    box-shadow:none !important;
+    background:#fff !important;
+    min-height:60px;
+    resize:none;
   }
 
   /* 🟢 출력용 텍스트만 표시 */
@@ -559,39 +723,63 @@ th:nth-child(12){ min-width:60px; }
 }
 
 
-/* =========================
-   ✅ 입력 구분 색상
+/* contenteditable placeholder */
+.cellText.empty::before{
+  content: attr(data-placeholder);
+  color:#aab4cc;
+  font-size:11.5px;
+  pointer-events:none;
+  white-space:pre-wrap;
+  line-height:1.5;
+}
+.cellText.empty:focus::before{
+  opacity:.5;
+}
+
+
    - 관리자 수기 입력: adminInput
    - AI 자동 생성: aiInput
 ========================= */
 
-/* 관리자 수기 입력(연한 웜톤) */
-.adminInput{
+/* 관리자 수기 입력(연한 웜톤) - input/select/textarea */
+input.adminInput, select.adminInput, textarea.adminInput{
   background:#fff6e9;
   border-color:#f2c48d !important;
   color:var(--ink);
 }
-.adminInput:focus{
+input.adminInput:focus, select.adminInput:focus, textarea.adminInput:focus{
   background:#fff1dc;
   border-color:#f59e0b !important;
   box-shadow:0 0 0 3px rgba(245,158,11,.18);
 }
+/* contenteditable adminInput (위험요인 div) */
+div.adminInput.cellText{ background:transparent; }
+div.adminInput.cellText:focus{
+  background:rgba(245,158,11,.05);
+  box-shadow:inset 0 0 0 2px rgba(245,158,11,.35);
+}
 
-/* =========================
-   🤖 AI 분석 결과 전용 색상 (통일)
-   - 피해형태 / 가능성 / 중대성 / 개선대책
-========================= */
-.aiInput{
-  background:#eaf1ff;              /* ❗ 흰색 아님, 연한 블루 */
+/* 🤖 AI 분석 결과 - input/select/textarea */
+input.aiInput, select.aiInput, textarea.aiInput{
+  background:#eaf1ff;
   border:1.5px solid #9db7ff !important;
   color:#0a2458;
   font-weight:600;
 }
-
-.aiInput:focus{
+input.aiInput:focus, select.aiInput:focus, textarea.aiInput:focus{
   background:#e1ecff;
   border-color:#2a6cf6 !important;
   box-shadow:0 0 0 3px rgba(42,108,246,.22);
+}
+/* contenteditable aiInput (개선대책 div) */
+div.aiInput.cellText{
+  background:transparent;
+  color:#0a2458;
+  font-weight:500;
+}
+div.aiInput.cellText:focus{
+  background:rgba(42,108,246,.05);
+  box-shadow:inset 0 0 0 2px rgba(42,108,246,.30);
 }
 
 
@@ -755,7 +943,7 @@ th:nth-child(12){ min-width:60px; }
   </div>
 
   <!-- ===== 위험성평가 상세 (버전1 기준 + KPI) ===== -->
-  <div class="card">
+  <div class="card" id="riskCard">
     <div class="sectionTitle">
       <div>
         <div class="t">위험성평가 상세</div>
@@ -775,17 +963,17 @@ th:nth-child(12){ min-width:60px; }
           <tr>
             <th class="center w-ck"><input type="checkbox" id="ckAll"></th>
             <th class="center w-no">No</th>
-            <th style="min-width:160px;">작업명</th>
-            <th style="min-width:140px;">작업위치</th>
-            <th style="min-width:260px;">위험요인 (AI 분석 트리거)</th>
-            <th style="min-width:75px;">피해형태</th>
-            <th style="min-width:45px;">가능성</th>
-            <th style="min-width:45px;">중대성</th>
-            <th style="min-width:120px;">위험등급</th>
-            <th style="min-width:420px;">개선대책</th>
-            <th style="min-width:75px;">조치자</th>
-            <th style="min-width:75px;">점검자</th>
-            <th class="center" style="min-width:90px;">관리</th>
+            <th style="min-width:150px;">작업명</th>
+            <th style="min-width:130px;">작업위치</th>
+            <th class="col-risk" style="min-width:280px;">⚠ 위험요인</th>
+            <th style="min-width:70px;">피해형태</th>
+            <th style="min-width:48px;">가능성</th>
+            <th style="min-width:48px;">중대성</th>
+            <th style="min-width:110px;">위험등급</th>
+            <th class="col-solution" style="min-width:440px;">✅ 개선대책</th>
+            <th style="min-width:72px;">조치자</th>
+            <th style="min-width:72px;">점검자</th>
+            <th class="center" style="min-width:80px;">관리</th>
           </tr>
         </thead>
         <tbody id="tbody"></tbody>
@@ -849,9 +1037,9 @@ th:nth-child(12){ min-width:60px; }
         <thead>
           <tr>
             <th class="center" style="width:54px;">No</th>
-            <th style="min-width:320px;">전회차 위험요인</th>
-            <th style="min-width:420px;">전회차 개선대책</th>
-            <th style="min-width:320px;">이행결과 (이번 회차 작성)</th>
+            <th class="col-risk" style="min-width:320px;">⚠ 전회차 위험요인</th>
+            <th class="col-solution" style="min-width:420px;">✅ 전회차 개선대책</th>
+            <th style="min-width:320px;background:linear-gradient(180deg,#e0f0e8 0%,#c8e4d4 100%);border-bottom-color:#60b080;color:#014020;">📋 이행결과 (이번 회차)</th>
           </tr>
         </thead>
         <tbody id="prevFeedbackBody">
@@ -897,7 +1085,7 @@ th:nth-child(12){ min-width:60px; }
    0) 설정 (Apps Script)
 ======================= */
 // ✅ Apps Script 웹앱 URL (반드시 /exec)
-const GAS_URL = "https://script.google.com/macros/s/AKfycbx18nvtzR_vm_3q9g5S1pHeDjUKJkKrWxEeU-SDzh4-_s54uJy4xOw7qj4qnMSaoMEy/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbwJUyy_I6PdeK1M_4J-2xHiTR9btrNQ1BlUjnDnUPQzCv-D4M1JH1ZJAu6ggdGal20U/exec";
 /* ✅ Firebase (사용자 제공 config 그대로) */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 import {
@@ -1261,6 +1449,28 @@ ${solutionsText}
 }
 
 /* =======================
+   contenteditable 헬퍼
+======================= */
+function getDivText(el){
+  if(!el) return "";
+  return el.innerText || el.textContent || "";
+}
+function setDivText(el, txt){
+  if(!el) return;
+  el.innerText = txt || "";
+  updatePlaceholder(el);
+}
+function updatePlaceholder(el){
+  if(!el) return;
+  const txt = (el.innerText || "").trim();
+  if(txt){
+    el.classList.remove("empty");
+  } else {
+    el.classList.add("empty");
+  }
+}
+
+/* =======================
    7) 테이블 Row 생성/렌더
 ======================= */
 const rowBusy = new WeakMap(); // {busy:boolean, lastRisk:string}
@@ -1309,36 +1519,40 @@ function renderScore(tr){
 function makeRow(prefill=null){
   const tr = document.createElement("tr");
   tr.innerHTML = `
-    <td class="center w-ck"><input type="checkbox" data-role="sel"></td>
-    <td class="center w-no" data-role="no"></td>
+    <td class="center w-ck" style="padding:8px 4px;"><input type="checkbox" data-role="sel"></td>
+    <td class="center w-no" data-role="no" style="font-weight:900;font-size:13px;color:#4060a0;padding:8px 4px;"></td>
 
     <td><input class="tIn adminInput" data-role="workName" placeholder="예: 거푸집 설치"></td>
     <td><input class="tIn adminInput" data-role="workLoc" placeholder="예: 3층 슬라브"></td>
 
-    <td>
-      <textarea class="tTa adminInput" data-role="risk" placeholder="위험요인 입력 후 포커스 아웃"></textarea>
+    <td class="cell-risk">
+      <div class="cellText adminInput" data-role="risk" contenteditable="true"
+        data-placeholder="위험요인 입력 후 포커스 아웃 →&#10;AI 자동 분석"></div>
+      <textarea class="tTa" data-role="risk-hidden" style="display:none;"></textarea>
       <div class="printText" data-print="risk"></div>
-     </td>
+    </td>
 
-    <td><input class="tIn aiInput" data-role="damage" placeholder="자동"></td>
-    <td><input class="tIn aiInput" data-role="prob" placeholder="1~3" inputmode="numeric"></td>
-    <td><input class="tIn aiInput" data-role="sev" placeholder="1~3" inputmode="numeric"></td>
+    <td style="text-align:center;"><input class="tIn aiInput" data-role="damage" placeholder="자동" style="text-align:center;"></td>
+    <td style="text-align:center;"><input class="tIn aiInput" data-role="prob" placeholder="1~3" inputmode="numeric" style="text-align:center;font-weight:900;font-size:14px;"></td>
+    <td style="text-align:center;"><input class="tIn aiInput" data-role="sev" placeholder="1~3" inputmode="numeric" style="text-align:center;font-weight:900;font-size:14px;"></td>
 
-    <td data-role="score" class="center" style="min-width:120px">
+    <td data-role="score" class="center" style="min-width:110px;padding:8px 4px;">
       <span style="color:var(--muted);font-size:12px">자동</span>
     </td>
 
-    <td>
-      <textarea class="tTa aiInput" data-role="solution" placeholder="자동 생성"></textarea>
+    <td class="cell-solution">
+      <div class="cellText aiInput" data-role="solution" contenteditable="true"
+        data-placeholder="AI 자동 생성&#10;(위험요인 입력 후 분석)"></div>
+      <textarea class="tTa" data-role="solution-hidden" style="display:none;"></textarea>
       <div class="printText" data-print="solution"></div>
     </td>
 
     <td><input class="tIn adminInput" data-role="actor" placeholder=""></td>
     <td><input class="tIn adminInput" data-role="checker" placeholder=""></td>
 
-    <td class="center">
+    <td class="center" style="padding:6px 4px;">
       <button class="btn danger" data-role="del" type="button"
-        style="padding:6px 8px;border-radius:8px;font-size:11px">삭제</button>
+        style="padding:6px 10px;border-radius:8px;font-size:11px;white-space:nowrap;">삭제</button>
     </td>
   `;
 
@@ -1348,14 +1562,23 @@ function makeRow(prefill=null){
   if(prefill){
     tr.querySelector("[data-role=workName]").value = prefill.workName || "";
     tr.querySelector("[data-role=workLoc]").value  = prefill.workLoc  || "";
-    tr.querySelector("[data-role=risk]").value     = prefill.risk     || "";
+    setDivText(tr.querySelector("[data-role=risk]"), prefill.risk || "");
     tr.querySelector("[data-role=damage]").value   = prefill.damage   || "";
     tr.querySelector("[data-role=prob]").value     = prefill.prob ? String(prefill.prob) : "";
     tr.querySelector("[data-role=sev]").value      = prefill.sev ? String(prefill.sev) : "";
-    tr.querySelector("[data-role=solution]").value = prefill.solution || "";
+    setDivText(tr.querySelector("[data-role=solution]"), prefill.solution || "");
     tr.querySelector("[data-role=actor]").value    = prefill.actor    || "";
     tr.querySelector("[data-role=checker]").value  = prefill.checker  || "";
   }
+
+  // placeholder 처리
+  [tr.querySelector("[data-role=risk]"), tr.querySelector("[data-role=solution]")].forEach(div=>{
+    if(!div) return;
+    updatePlaceholder(div);
+    div.addEventListener("focus", ()=> updatePlaceholder(div));
+    div.addEventListener("blur",  ()=> updatePlaceholder(div));
+    div.addEventListener("input", ()=> updatePlaceholder(div));
+  });
 
   // 삭제
   tr.querySelector("[data-role=del]").addEventListener("click", ()=>{
@@ -1367,7 +1590,7 @@ function makeRow(prefill=null){
     }
   });
 
-  // 위험요인 blur → AI 분석 (버전1 핵심)
+  // 위험요인 blur → AI 분석
   tr.querySelector("[data-role=risk]").addEventListener("blur", ()=> analyzeRow(tr));
 
   // 가능성/중대성 입력 → 위험등급 자동
@@ -1407,7 +1630,7 @@ async function analyzeRow(tr){
   if(!state || state.busy) return;
 
   const riskEl = tr.querySelector("[data-role=risk]");
-  const risk = riskEl.value.trim();
+  const risk = getDivText(riskEl).trim();
   if(!risk) return;
 
   if(state.lastRisk === risk) return;
@@ -1421,9 +1644,9 @@ async function analyzeRow(tr){
   state.lastRisk = risk;
 
   damageEl.value = "분석 중...";
-  probEl.value   = "분석 중...";
-  sevEl.value    = "분석 중...";
-  solEl.value    = "분석 중...";
+  probEl.value   = "...";
+  sevEl.value    = "...";
+  setDivText(solEl, "AI 분석 중...");
   renderScore(tr);
 
   try {
@@ -1435,8 +1658,7 @@ async function analyzeRow(tr){
   probEl.value   = String(out.prob || "");
   sevEl.value    = String(out.sev || "");
 
-  solEl.value = out.solutionText || "";
-
+  setDivText(solEl, out.solutionText || "");
 
   renderScore(tr);
 
@@ -1444,7 +1666,7 @@ async function analyzeRow(tr){
   damageEl.value = "분석 실패";
   probEl.value = "";
   sevEl.value  = "";
-  solEl.value  = "";
+  setDivText(solEl, "");
   renderScore(tr);
   console.error(e);
   toast("AI 분석 실패");
@@ -1462,8 +1684,8 @@ async function generateSummary(){
   let allSolutions = "";
 
   rows.forEach(tr=>{
-    const risk = tr.querySelector("[data-role=risk]").value.trim();
-    const sol  = tr.querySelector("[data-role=solution]").value.trim();
+    const risk = getDivText(tr.querySelector("[data-role=risk]")).trim();
+    const sol  = getDivText(tr.querySelector("[data-role=solution]")).trim();
     if(risk && risk !== "분석 중..." && risk !== "분석 실패"){
       allRisks += `- ${risk}\n`;
       if(sol && sol !== "분석 중..." && sol !== "분석 실패"){
@@ -1538,11 +1760,11 @@ function collectData(){
   const risks = [...tbody.querySelectorAll("tr")].map(tr=>({
     workName: tr.querySelector("[data-role=workName]").value || "",
     workLoc:  tr.querySelector("[data-role=workLoc]").value || "",
-    risk:     tr.querySelector("[data-role=risk]").value || "",
+    risk:     getDivText(tr.querySelector("[data-role=risk]")) || "",
     damage:   tr.querySelector("[data-role=damage]").value || "",
     prob:     Number(tr.querySelector("[data-role=prob]").value || 0),
     sev:      Number(tr.querySelector("[data-role=sev]").value || 0),
-    solution: tr.querySelector("[data-role=solution]").value || "",
+    solution: getDivText(tr.querySelector("[data-role=solution]")) || "",
     actor:    tr.querySelector("[data-role=actor]").value || "",
     checker:  tr.querySelector("[data-role=checker]").value || ""
   }));
@@ -1822,13 +2044,18 @@ prevRisks.forEach((r, i) => {
 
   const tr = document.createElement("tr");
   tr.innerHTML = `
-    <td class="center">${i+1}</td>
-    <td>${(r.risk || "").replaceAll("<","&lt;")}</td>
-    <td>${(r.solution || "").replaceAll("<","&lt;")}</td>
-    <td>
+    <td class="center" style="font-weight:900;color:#4060a0;padding:10px 6px;">${i+1}</td>
+    <td class="cell-risk" style="padding:0;">
+      <div style="padding:10px;font-size:12.5px;line-height:1.6;white-space:pre-wrap;word-break:break-word;">${(r.risk || "").replaceAll("<","&lt;")}</div>
+    </td>
+    <td class="cell-solution" style="padding:0;">
+      <div style="padding:10px;font-size:12px;line-height:1.6;white-space:pre-wrap;word-break:break-word;">${(r.solution || "").replaceAll("<","&lt;")}</div>
+    </td>
+    <td style="padding:6px;">
       <textarea class="tTa adminInput"
         data-role="prevResult"
         data-prev-index="${i}"
+        style="display:block !important; min-height:80px; width:100%; border:1.3px solid #c6d0e6; border-radius:10px; padding:8px 10px; font-size:12px; line-height:1.5; resize:vertical; background:#fff6e9; font-family:inherit;"
         placeholder="이행결과 작성">${savedResult}</textarea>
     </td>
   `;
@@ -1927,8 +2154,8 @@ window.addEventListener("beforeprint", () => {
     const prRisk = tr.querySelector("[data-print=risk]");
     const prSol  = tr.querySelector("[data-print=solution]");
 
-    if (risk && prRisk) prRisk.textContent = risk.value;
-    if (sol && prSol)   prSol.textContent  = sol.value;
+    if (risk && prRisk) prRisk.textContent = getDivText(risk);
+    if (sol && prSol)   prSol.textContent  = getDivText(sol);
   });
   const worker = document.getElementById("workerOpinion");
   const workerPrint = document.getElementById("workerOpinionPrint");
